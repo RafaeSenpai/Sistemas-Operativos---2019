@@ -1,0 +1,1 @@
+Neste local apenas deverá ser colocado os ficheiros ""estáveis"" do programa.
