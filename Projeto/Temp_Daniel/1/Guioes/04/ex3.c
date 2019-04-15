@@ -29,9 +29,12 @@ int main(int argc, char const *argv[])
 	}
 
 	
+	if(fork()
+	// com o exec estás a executar o comando wc
 	execvp("wc",NULL);
 	
-
+	
+	//
 	wait(&status);
 
 

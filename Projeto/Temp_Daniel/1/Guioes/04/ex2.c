@@ -27,16 +27,17 @@ int main(int argc, char const *argv[])
 		write(ferros,"Erro ao riderecionar ficheiro de stdout\n",41);
 		//printf("Erro ao riderecionar ficheiro de stdout\n");
 	}
-
-	if(fork()==0){
+	// Estás a criar o filho 
+	if(fork()==0){// estando no filho fazes a leitura e escrita no ficheiro que queres
 
 		while((n=read(fabrir,&c,1))>0){
 			write(fsaida,&c,n);
 		}
 	}
+	// o pai vai esperar
 
 	wait(&status);
-
+	// fechas os ficheiros
 	close(fsaida);
 	close(ferros);
 	close(fabrir);
