@@ -1,0 +1,1 @@
+int numLinesSTRINGS(char *ficheiro);
