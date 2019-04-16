@@ -45,9 +45,11 @@ linhaArtigo[0]='\0';
 
 	/*
 		Leitura do teclado para uma array
+
+		o que é lido para o arrray está dividido em 2 partes que são o nome do artigo e o preço do mesmo.
+
 	*/
 	char buffer1[1024];
-	char buffer2[1024];
 	if(read(0, buffer1, 1024) < 0){
 			/*
 				Envia para o stdou uma notificação de que não foi possivel proceder á gravação 
@@ -60,20 +62,43 @@ linhaArtigo[0]='\0';
 			Verifica o tamanho do conteudo relevante da string
 		*/
 		for(counter=0;buffer1[counter]!='\n';counter++);
-		write(ficheiroSTRINGS, buffer1, counter + 1); /* <--- counter + 1: para que adicione o '\n' e 
-																			o proximo artigo seja 
-																			escrito na proxima linha! */
-		/*
-			- Escrita do conteudo relevante do buffer1 no ficheiro, i é, tudo até ao \n pois a partir
-			  daí é "lixo" da memória, salvaguarda-se assim a gravação correta do nome do artigo 
-			  independentemente do seu tamanho (até 1024 caracteres);
-			- countTemp + 1: Para capturar o \n e assim já mudar de linha no ficheiro automaticamente
-		*/
+
 		if(counter==0){
 			main();
 		}else{
-			time_t data_atual = time(&data_atual);
+			char preco[1024];
+			int j=0;
+			/*
+				Captura do buffer o preço do artigo para uma variavel, para mais terde essa mesma variavel 
+				ser adicionada á linha do artigo
+				
+				NOTA: Este metodo de captura do preço terá que ser alterado completamente para passar a obter
+				o preço atravez do numero da posição de argumentos passados á função
+			*/
+			int i;
+			for(i=0; buffer1[i]!='\n'; i++){
+				if((buffer1[i]>='0' && buffer1[i]<='9') || (buffer1[i]=='$' || buffer1[i]==',')){
+					preco[j]=buffer1[i];
+					printf("id i: %d\n",i);
+					j++;
+				}
+			}
+			preco[j]='\n';
+
+
+			/*O WRITE A BAIXO TEM QUE LIMITAR APENAS A PASSAGEM DO NOME DO ARTIGO*/
+			write(ficheiroSTRINGS, buffer1, counter + 1); /* <--- counter + 1: para que adicione o '\n' e 
+																				o proximo artigo seja 
+																				escrito na proxima linha! */
 			
+			/*
+				- Escrita do conteudo relevante do buffer1 no ficheiro, i é, tudo até ao \n pois a partir
+				  daí é "lixo" da memória, salvaguarda-se assim a gravação correta do nome do artigo 
+				  independentemente do seu tamanho (até 1024 caracteres);
+				- countTemp + 1: Para capturar o \n e assim já mudar de linha no ficheiro automaticamente
+			*/
+				time_t data_atual = time(&data_atual);
+				
 			/*
 				Colocar aqui mesmo uma função de contagem de linhas no ficheiro artigos e o 
 				resultado devolvido será incrmentado em 1 unidade e usado como ID do artigo a inserir
@@ -84,8 +109,6 @@ linhaArtigo[0]='\0';
 				ctime: converte a data atual numa string
 			*/
 		
-			//concatenar a string da data com um ifen para mais tarde concatenar tb com o ID do artigo
-			
 			char numLinha[1024];
 			
 			sprintf(numLinha, "%d", numLinesSTRINGS("STRINGS.txt"));/* <-- converte o inteiro que representa 
@@ -94,13 +117,20 @@ linhaArtigo[0]='\0';
 			strcat(linhaArtigo,numLinha); /* <-- Adiciona o numero da linha como parte da referencia do artigo*/
 			//formatar a data para um formato mais pequeno
 			strcat(linhaArtigo,ctime(&data_atual));/* <------------- ctime: converte a data atual para string 
-																	 		(string de tamanho fixo)*/
-			linhaArtigo[strlen(linhaArtigo)-1]='\0';/* <---------------- para forçar a não mudança de linha */
-			strcat(linhaArtigo,"-->");
-			numLinha[strlen(numLinha)-1]='\0';/* <--------- Para retirar á string da linha do artigo o underscore adicionado anteriormente*/
+																	 		(string de tamanho fixo) OBS: adiciona '\n' no final da 
+																	 		string gerada*/
+			linhaArtigo[strlen(linhaArtigo)-1]='\0';/* <---------------- para forçar a NÃO mudança de linha */
+			strcat(linhaArtigo,"-->"); /* <-----Separador '-->' é usado para distinção do ID do produto com o numero da linha onde se 
+												encontra o nome do produto(no ficheiro STRINGS.txt)*/
+			numLinha[strlen(numLinha)-1]='\0';/* <--------- Para retirar da string da linha do artigo o underscore adicionado anteriormente*/
 			strcat(linhaArtigo,numLinha);
-			strcat(linhaArtigo,"\n");/* <-------------------------------para ocorrer a mudança de linha*/
-			write(ficheiroARTIGOS, linhaArtigo, strlen(linhaArtigo));/* <------------ 28 = strlen(strDate) + strlen("-->") */
+			strcat(linhaArtigo,"-->");/* <-------------------------------para ocorrer a mudança de linha*/
+			strcat(linhaArtigo,preco);
+			write(ficheiroARTIGOS, linhaArtigo, strlen(linhaArtigo));/* <------------ guarda no ficheiro ARTIGOS todo o conteudo da linhaArtigo*/
+			
+
+
+
 			/*
 				Termina a ligação com o ficheiro
 			*/
