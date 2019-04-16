@@ -7,86 +7,69 @@
 #include <signal.h>
 #include <sys/types.h>
 
-void insere(char* nome, float preco);
+void insere(char* nome, char* preco);
 
-void altera_nome(int codigo, char* nome);
+void altera_nome(char* codigo, char* nome);
 
-void altera_preco(int codigo, float preco);
+void altera_preco(char* codigo, char* preco);
 
 int main(int argc, char* argv[]){
 
-  char buf[128], buf2[128], buf3[128], buf4[128], buf5[128], *nome, *acao, *codigo_string, *preco, *token;
-  int codigo_int, len1, len2;
-  double preco_f;
+  char *acao, *nome, *codigo, *preco;
 
-  while(1){
+  acao = strdup("i");
+  nome = strdup("badjoras");
+  codigo = strdup("42069");
+  preco = strdup("1.23");
 
-    scanf ("%s[^\n]", buf);
-    strcpy(buf2, buf);
-    strcpy(buf3, buf);
-    strcpy(buf4, buf);
-    strcpy(buf5, buf);
-    acao = strtok(buf2, " ");
+  insere(nome, preco);
 
-    if(strcmp(acao, "i") == 0){
-
-      printf("");
-      //printf("%s\n", buf2);
-
-      //insere(nome, preco_val);
-    }
-/*
-    else if(strcmp(acao, "n") == 0){
-
-      nome = strrchr(buf2, ' ');
-      //printf("nome = %s\n", nome);
-
-      codigo_string = strchr(buf2, ' ');
-      strtok(codigo_string, " ");
-      codigo_int = atoi(codigo_string);
-      //printf("codigo = %d\n", codigo_int);
-
-      printf("Comando: n, %d, %s\n", codigo_int, nome);
-
-      //altera_nome(codigo_int, nome);
-    }
-
-    else if(strcmp(acao, "p") == 0){
-
-      preco = strrchr(buf2, ' ');
-      preco_f = atof(preco);
-      //printf("preco = %f\n", preco_f);
-
-      codigo_string = strchr(buf2, ' ');
-      strtok(codigo_string, " ");
-      codigo_int = atoi(codigo_string);
-      //printf("codigo = %d\n", codigo_int);
-
-      printf("Comando: i, %d, %f\n", codigo_int, preco_f);
-
-      //altera_preco(codigo_int, preco_f)
-    }
-
-    else if(strcmp(acao, "q") == 0) break;
-
-    else{
-
-      printf("Input inválido, insira novo input\n");
-
-    }
-*/
-  }
+/* falta ler input e chamar funções correspondentes*/
 
   return 0;
 
 }
 
-void insere(char* nome, float preco){
+void insere(char* nome, char* preco){
 
-  int fd, i;
+  int fd, id = 0, aux = 0, count = 0;
+  char *buf, *iden, *count_s;
 
   fd = open("ARTIGOS", O_CREAT | O_TRUNC | O_WRONLY, 0777);
-  write(fd, "HELLO HELLO HELLO", 18);
+
+/*
+  read(fd, buf, 1);
+
+  while(strcmp(buf, "\0") != 0){
+    if(strcmp(buf, "\n") == 0) id++;
+    read(fd, buf, 1);
+  }
+
+  printf("here\n");
+
+  aux = id;
+  while(aux != 0){
+    aux /= 10;
+    ++count;
+  }
+
+  aux = count;
+  while(count > 0){
+    strcat(iden, "0");
+    count--;
+  }
+
+  sprintf(count_s, "%d ", aux);
+  strcat(iden, count_s);
+  strcat(iden, count_s);
+  strcat(iden, preco);
+  */
+
+  iden = strdup("1 1 4.20\n2 2 3.50\n3 3 0.69\n");
+  write(fd, iden, strlen(iden));
+
+  iden = strdup("4 4 4.20\n5 5 3.50\n6 6 0.69\n");
+  write(fd, iden, strlen(iden));
   close(fd);
 
 }
