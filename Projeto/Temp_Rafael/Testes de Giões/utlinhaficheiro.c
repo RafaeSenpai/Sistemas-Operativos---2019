@@ -6,8 +6,8 @@
 #include <sys/types.h>
 #include <stdlib.h>
 #include <stdio.h>
-
-
+#include <time.h>
+#include <string.h>
 /*	
 FUNÇÃO: 1
 	- Remove todos os espaços a mais existentes na string inserida;
@@ -23,18 +23,19 @@ FUNÇÃO: 2
 */
 
 int main(){
-int ficheiroSTRINGS;
+int ficheiroARTIGOS;
 int counter = 0;
-
+char strDate[24];
+strDate[0]='\0';
 	/*
 		Abrir ficheiro
 	*/
-	ficheiroSTRINGS = open("STRINGS.txt", O_CREAT | O_APPEND | O_RDWR, 0777);
+	ficheiroARTIGOS = open("ARTIGOS.txt", O_CREAT | O_APPEND | O_RDWR, 0777);
 
 	/*
 		Verifica a integridado do ficheiro e sua ligação
 	*/
-	if(ficheiroSTRINGS < 0){
+	if(ficheiroARTIGOS < 0){
         	return -1;
 	}
 
@@ -64,11 +65,31 @@ int counter = 0;
 		if(counter==0){
 			main();
 		}else{
-			write(ficheiroSTRINGS, buffer, counter + 1);
+			time_t data_atual = time(&data_atual);
+			
+			/*
+				Colocar aqui mesmo uma função de contagem de linhas no ficheiro artigos e o 
+				resultado devolvido será incrmentado em 1 unidade e usado como ID do artigo a inserir
+			*/
+
+
+			/*
+				ctime: converte a data atual numa string
+			*/
+			//concatenar a string da data com um ifen para mais tarde concatenar tb com o ID do artigo
+		
+
+			strcat(strDate,ctime(&data_atual));//<-ctime: converte a data atual para string
+			strDate[strlen(strDate)-1]='\0';
+			strcat(strDate,"--->");
+			write(ficheiroARTIGOS, strDate, 28);// <---28 = strlen(strDate) + strlen("-->")
+			write(ficheiroARTIGOS, buffer, counter + 1); /* <--counter + 1: para que adicione o '\n' e 
+																			o proximo artigo seja 
+																			escrito na proxima linha! */
 			/*
 				Termina a ligação com o ficheiro
 			*/
-			close(ficheiroSTRINGS);
+			close(ficheiroARTIGOS);
 		}
 		return *buffer;
 
