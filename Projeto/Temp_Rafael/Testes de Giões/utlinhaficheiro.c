@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
+#include <ctype.h>
 #include "api.h"
 /*	
 FUNÇÃO: 1
@@ -49,11 +50,11 @@ linhaArtigo[0]='\0';
 		o que é lido para o arrray está dividido em 2 partes que são o nome do artigo e o preço do mesmo.
 
 	*/
-	char buffer1[1024];
-	if(read(0, buffer1, 1024) < 0){
+	char buffer[1024];
+	if(read(0, buffer, 1024) < 0){
 			/*
 				Envia para o stdou uma notificação de que não foi possivel proceder á gravação 
-				do conteudo do stdin no "buffer1"
+				do conteudo do stdin no "buffer"
 			*/
     		write(2, "Ocorreu um erro de leitura do artigo\n", 23);
 	    	exit(0);
@@ -61,13 +62,32 @@ linhaArtigo[0]='\0';
 		/*
 			Verifica o tamanho do conteudo relevante da string
 		*/
-		for(counter=0;buffer1[counter]!='\n';counter++);
+		for(counter=0;buffer[counter]!='\n';counter++);
 
 		if(counter==0){
 			main();
 		}else{
 			char preco[1024];
-			int j=0;
+			char nomeArtigo[1024];
+			int j;
+			int i;
+			
+			for(j=0,i=0; buffer[i]!='\n'; i++){
+				if( isalpha(buffer[i]) || buffer[i]<=' '){
+					nomeArtigo[j]=buffer[i];
+					j++;
+				}
+			}
+			nomeArtigo[j-1]='\n';
+
+
+			write(ficheiroSTRINGS, nomeArtigo, strlen(nomeArtigo)); /* <--- counter + 1: para que adicione o '\n' e 
+																				o proximo artigo seja 
+																				escrito na proxima linha! */
+			
+			
+
+
 			/*
 				Captura do buffer o preço do artigo para uma variavel, para mais terde essa mesma variavel 
 				ser adicionada á linha do artigo
@@ -75,24 +95,17 @@ linhaArtigo[0]='\0';
 				NOTA: Este metodo de captura do preço terá que ser alterado completamente para passar a obter
 				o preço atravez do numero da posição de argumentos passados á função
 			*/
-			int i;
-			for(i=0; buffer1[i]!='\n'; i++){
-				if((buffer1[i]>='0' && buffer1[i]<='9') || (buffer1[i]=='$' || buffer1[i]==',')){
-					preco[j]=buffer1[i];
-					printf("id i: %d\n",i);
+			
+			for(j=0,i=0; buffer[i]!='\n'; i++){
+				if((buffer[i]>='0' && buffer[i]<='9') || (buffer[i]=='$' || buffer[i]==',')){
+					preco[j]=buffer[i];
 					j++;
 				}
 			}
 			preco[j]='\n';
 
-
-			/*O WRITE A BAIXO TEM QUE LIMITAR APENAS A PASSAGEM DO NOME DO ARTIGO*/
-			write(ficheiroSTRINGS, buffer1, counter + 1); /* <--- counter + 1: para que adicione o '\n' e 
-																				o proximo artigo seja 
-																				escrito na proxima linha! */
-			
 			/*
-				- Escrita do conteudo relevante do buffer1 no ficheiro, i é, tudo até ao \n pois a partir
+				- Escrita do conteudo relevante do buffer no ficheiro, i é, tudo até ao \n pois a partir
 				  daí é "lixo" da memória, salvaguarda-se assim a gravação correta do nome do artigo 
 				  independentemente do seu tamanho (até 1024 caracteres);
 				- countTemp + 1: Para capturar o \n e assim já mudar de linha no ficheiro automaticamente
@@ -136,7 +149,7 @@ linhaArtigo[0]='\0';
 			*/
 			close(ficheiroARTIGOS);
 		}
-		return *buffer1;
+		return *buffer;
 
 	}	
 }
