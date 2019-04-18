@@ -1,9 +1,12 @@
+/*CODIGO FUNIONAL*/
+
+
 #include <unistd.h>  //definições e declarações de chamadas
 #include <fcntl.h> //definição modos de abertura de ficheiro
 #include <sys/types.h>
 #include <stdlib.h>
 #include <stdio.h>
-
+#include "api.h"
 
 /*	
 FUNÇÃO: 1
@@ -20,18 +23,18 @@ FUNÇÃO: 2
 */
 
 int main(){
-int ficheiro;
+int ficheiroSTRINGS;
 int counter = 0;
 
 	/*
 		Abrir ficheiro
 	*/
-	ficheiro = open("dados.txt", O_CREAT | O_APPEND | O_RDWR, 0777);
+	ficheiroSTRINGS = open("STRINGS.txt", O_CREAT | O_APPEND | O_RDWR, 0777);
 
 	/*
 		Verifica a integridado do ficheiro e sua ligação
 	*/
-	if(ficheiro < 0){
+	if(ficheiroSTRINGS < 0){
         	return -1;
 	}
 
@@ -61,11 +64,11 @@ int counter = 0;
 		if(counter==0){
 			main();
 		}else{
-			write(ficheiro, buffer, counter + 1);
+			write(ficheiroSTRINGS, buffer, counter + 1);
 			/*
 				Termina a ligação com o ficheiro
 			*/
-			close(ficheiro);
+			close(ficheiroSTRINGS);
 		}
 		return *buffer;
 
