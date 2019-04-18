@@ -38,7 +38,7 @@ int id;
 			for(counter=0;buffer[counter]!='\n';counter++);
 			id = addArtigo(buffer);
 
-			if(id == -1){
+			if(id == 0){
 				write(2, "Erro na gravação do artigo no ficheiro ARTIGOS.txt!\n", 51);
 			}else if(id == -2){
 				write(2, "Erro na gravação do nome do artigo no ficheiro STRINGS.txt!\n", 61);	
