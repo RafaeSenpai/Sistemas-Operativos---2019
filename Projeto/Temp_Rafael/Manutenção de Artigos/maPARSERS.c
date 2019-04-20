@@ -1,12 +1,16 @@
-#include "maParsers.h"
+#include "maPARSERS.h"
+
+
 /*
 	Variaveis locais
 */
 char nomeArtigo[1024];
 char pr[1014];
 
+
+
 /*
-	Remove do buffer todos os espaços a mais
+	Remove do buffer todos os espaços a mais entre as palavras ou caracters
 */
 char* remSpc(char* buffer) {
 
@@ -55,7 +59,7 @@ int i = 0;
 	Retirar do buffer o nome do artigo
 */
 char* takeNomeBuff(char* buffer){
-int j, i,min, max;
+int j, i, max;
 
 	for(max=strlen(buffer)-1; buffer[max]!=' '; max--);//coloca-se na posição onde começa o preço
 
@@ -79,7 +83,6 @@ return nomeArtigo;
 	IMPORTANTE: A função não consegue capturar o preço quando a seguir deste tem espaços
 */
 char* takePrecoBuff(char* buffer){
-float preco;
 int i,j;
 i = strlen(buffer)-1;
 
@@ -87,12 +90,12 @@ i = strlen(buffer)-1;
 		Parte do final da string do buffer e vai andando para trás até encontrar 1 espaço. 
 		Nesta altura é suposto estarmos no inicio do preço do artigo na string
 	*/
-	for(i; buffer[i]!=' ';i--);
+	for(; buffer[i]!=' ';i--);
 
 	/*
 		Procede á captura da parte da string referente ao preço
 	*/
-	for(j=0,i; buffer[i]!='\0'; i++){
+	for(j=0; buffer[i]!='\0'; i++){
 		if((buffer[i]>='0' && buffer[i]<='9') || buffer[i]==',' || buffer[i]=='.'){
 			pr[j]=buffer[i];
 			j++;
@@ -102,4 +105,3 @@ i = strlen(buffer)-1;
 
 return pr;
 }
-

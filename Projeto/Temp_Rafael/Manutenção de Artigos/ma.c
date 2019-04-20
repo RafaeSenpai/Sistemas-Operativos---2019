@@ -1,4 +1,5 @@
-#include "mArtigosAPI.h"
+#include "maAPI.h"
+
 
 int main(){
 char buffer[1024];
@@ -14,7 +15,7 @@ char buffer[1024];
 	    	exit(0);
 	}else{
 		callCommands(buffer);
-		free(buffer);
+		
 		
 	}
 return 0;
