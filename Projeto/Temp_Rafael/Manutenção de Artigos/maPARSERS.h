@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 char* remSpc(char* buffer);
+char* takeIDBuff(char* buff);
 char takeInstBuff(char* buffer);
 char* takeNomeBuff(char* buffer);
 char* takePrecoBuff(char* buffer);

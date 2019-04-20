@@ -23,7 +23,7 @@ struct Artigo
 /*
 	Estrutura do artigo no ficheiro artigos
 */
-typedef struct ArtigoInFile
+typedef struct ArtigoF
 {
     int id;
     int ind_nome; 
@@ -43,12 +43,12 @@ struct Venda
 
 
 
-
+ssize_t readln(int fildes, void *buf, size_t nbyte);
 int verifDescrt(int descArtig, int descStr);
 char* getNome(int *ficheiro, int idArtigo);
 float getStock(int *ficheiro,int idArtigo);
 float getPrice(int *ficheiro, int idArtigo);
-char* insereArtigo(char* nome,char* preco);
+void insereArtigo(char* nome,char* preco);
 void editName(char* id, char* nome);
 void editPrice(char* id, char* preco);
 void callCommands(char* buffer);

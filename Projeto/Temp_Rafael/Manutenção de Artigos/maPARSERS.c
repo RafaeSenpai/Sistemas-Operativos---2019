@@ -6,25 +6,39 @@
 */
 char nomeArtigo[1024];
 char pr[1014];
-
+char id[1024];
 
 
 /*
-	Remove do buffer todos os espaços a mais entre as palavras ou caracters
+	Remove do buffer todos os espaços a mais no inicio, no final e entre 
+	as palavras ou caracters.
+
+	NOTA: Sempre que uma string tem varios espaços no seu final, a função remove todos
+	deixando apenas 1. Supostamente no final da string não devia de ficar nenhum espaço, 
+	mas até ao momento não se resolveu este caso. Tendo em conta esta limitação, todos 
+	os inputs dados ao programa funcionam corretamente, podendo apenas haver erros no 
+	caso em que os inputs contenham 1 ou mais espaços no seu final. Mais precisamente 
+	na função takeIDBuff.
 */
-char* remSpc(char* buffer) {
+char* remSpc (char* buffer){ 
 
-    int j = 1;
-    for (int i = 1; buffer[i]; i++) {
-        if (buffer[i] != ' ' || (buffer[i - 1] != ' ')) {
-           buffer[j] = buffer[i];
-           j++;
-        }
+    int l,e;
+    l=e=0;
+
+    while(buffer[l]!='\0') {
+
+      if ((buffer[l])==' ' && buffer[e-1]== ' ') l++;
+      else {buffer[e]=buffer[l]; l++; e++;}
     }
-    buffer[j-1] = '\0';
-return buffer;
-}
+    
+    buffer[e]='\0';
 
+    if(buffer[0]== ' '){
+    	buffer=&(buffer[1]);
+    }
+
+    return buffer;  
+  }
 
 /*
 	Captura o primeiro char que encontrar e considera-o como o comando a executar
@@ -38,6 +52,7 @@ return buffer;
 */
 char takeInstBuff(char* buffer){
 int i = 0;
+	
 
 	if(buffer[i]==' '){
 		while(buffer[i]==' '){
@@ -104,4 +119,34 @@ i = strlen(buffer)-1;
 	pr[j]='\0';
 
 return pr;
+}
+
+
+
+/*
+	Usado para buscar o artigo no qual se quer alterar o preço
+*/
+char* takeIDBuff(char* buff){
+int j;
+int i = strlen(buff)-1;
+//char id[i]; //<---- tive que declarar esta variavel como publica snão dava warning
+
+	/*O while imediatamente a baixo é a solução alternativa ao bug da função que remove espaços, menos 
+	os espaços do final da string(fica sempre um espaço no final da string)*/
+	while(buff[i]==' '){
+		i--;
+	}
+
+	while(isdigit(buff[i]) || isalpha(buff[i]) || buff[i]!=' '){
+		i--;
+	}
+	
+	i++;
+	for(j=0; buff[i]!='\0';i++,j++){
+		id[j]=buff[i];
+	}
+	
+	id[j]='\0';
+
+return id;
 }
