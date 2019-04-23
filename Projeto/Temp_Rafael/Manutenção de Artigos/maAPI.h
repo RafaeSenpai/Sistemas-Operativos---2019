@@ -1,20 +1,39 @@
-#ifndef maArtigosAPI_h
-#define maArtigosAPI_h
+#ifndef maAPI_h
+#define maAPI_h
 #include <ctype.h> //isdigit
 #include <stdlib.h> //atof
 #include <string.h> //strlen
 #include <unistd.h> //system calls
 #include <stdio.h>
+#include "maPARSERS.h"
 
+/*
+Estrutura de artigo 
+*/
 struct Artigo
 {
-    char id;
+    int id;
     char *nome;
     float preco;
     float stock;
-    int ref_nome;
 } Artigo;
 
+
+
+/*
+	Estrutura do artigo no ficheiro artigos
+*/
+typedef struct ArtigoF
+{
+    int id;
+    int ind_nome; 
+    float preco;
+} *ArtigoFile;
+
+
+/*
+	EStrutura de uma venda
+*/
 struct Venda
 {
 	char idArt;
@@ -24,16 +43,13 @@ struct Venda
 
 
 
-
-int verifDescrt(int *descArtig, int *descStr);
-char* insereArtigo(char* nome,char* preco);
+ssize_t readln(int fildes, void *buf, size_t nbyte);
+int verifDescrt(int descArtig, int descStr);
 char* getNome(int *ficheiro, int idArtigo);
-int getStock(int *ficheiro,int idArtigo);
-
-
+float getStock(int *ficheiro,int idArtigo);
+float getPrice(int *ficheiro, int idArtigo);
+void insereArtigo(char* nome,char* preco);
+void editName(char* id, char* nome);
+void editPrice(char* id, char* preco);
 void callCommands(char* buffer);
-
-char takeInstBuff(char* buffer);
-
-
 #endif
