@@ -5,7 +5,8 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <string.h>
-
+#include <sys/types.h>
+#include <sys/stat.h>
 
 int main(int argc, char const *argv[])
 {
@@ -15,7 +16,7 @@ int main(int argc, char const *argv[])
    int server_to_client;
    char *myfifo2 = "/tmp/server_to_client_fifo";
 
-   char buf[1024];
+   char buf[1024] = "";
    char str[1024];
 
    /* create the FIFO (named pipe) */
@@ -28,21 +29,21 @@ int main(int argc, char const *argv[])
 
    write(1,"Server ON.\n",11);
 
-   
+
+
    while (1)
    {
       int n=read(client_to_server,buf,1024); // LER O QUE O CLIENTE ESCREVE
-      //buf[n-1]='\0';
-      if (strcmp("exit",buf)==0)
-      {  
+      if (strcmp("exit\n",buf)==0)
+      {
          write(1,"Server OFF.\n",10);
          break;
       }
 
-         
+
 
       else if (strcmp(" ",buf)!=0)
-      {  
+      {
          write(1,"Received: \n",10);
          write(1,buf,n);
 
@@ -51,11 +52,11 @@ int main(int argc, char const *argv[])
       }
          memset(buf, 0, n);
 
-       //clean buf from any data 
+       //clean buf from any data
       //memset(buf, 0, sizeof(buf-1));
    }
 
-   
+
    close(client_to_server);
    close(server_to_client);
 
