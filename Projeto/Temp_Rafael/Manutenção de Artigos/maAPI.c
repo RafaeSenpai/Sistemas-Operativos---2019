@@ -53,21 +53,6 @@ return numLinhas;
 
 
 
-ArtigoFile structArtigoFile(int *fileART, int *fileSTR, char* name,char* price){
-ArtigoFile new;
-int bt1 = lseek(*fileSTR,0,SEEK_END);//devolve o numero lidos até ao final do ficheiro STRINGS.txt
-int bt2 = lseek(*fileART,0,SEEK_END);//devolve o numero lidos até ao final do ficheiro ARTIGOS.txt
-
-new = malloc(sizeof(struct ArtigoF));
-	
-	new->id = bt2/sizeof(struct ArtigoF); //new->id fica com o nº de bytes lidos até ao final do ficheiro strings
-	new->ind_nome = bt1; //new->id fica com o nº de bytes lidos até ao final do ficheiro ARTIGOS
-	new->preco = atof(price);
-
-return new;
-}
-
-
 ssize_t readln(int fildes, void *buf, size_t nbyte){
 ssize_t nbytes = 0;
 int n;
@@ -86,7 +71,55 @@ char *buffer = (char *)buf;
 
 
 
+NomeArtigo structNomeArtigo(char* name){
+NomeArtigo new;
+
+	new = malloc(sizeof(NomeArtigo));
+	strcpy(new->nome, name);
+	new->dim = strlen(name);
+
+return new;
+}
+
+/*
+	Estrutura de Artigo a ser guardada no ficheiro ARTIGOS.txt
+*/
+ArtigoFile structArtigoFile(int *fileART, int *fileSTR, char* name,char* price){
+ArtigoFile new;
+int bt1 = lseek(*fileSTR,0,SEEK_END);//devolve o numero lidos até ao final do ficheiro STRINGS.txt
+int bt2 = lseek(*fileART,0,SEEK_END);//devolve o numero lidos até ao final do ficheiro ARTIGOS.txt
+
+new = malloc(sizeof(struct ArtigoF));
+	
+	new->id = bt2/sizeof(struct ArtigoF); //new->id fica com o resultado do nº de bytes lidos até ao final do ficheiro ARTIGOS.txt dividido pelo tamanho da struct que define um artigo
+	new->ind_nome = bt1/sizeof(struct NomeArtigo); //new->id fica com o nº de bytes lidos até ao final do ficheiro STRINGS
+	new->preco = atof(price);
+
+return new;
+}
+
+
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+char* getNome(int ref_nome){
+
+char nome[128];
+
+	int fileSTRS = open("STRINGS.txt", O_RDONLY, 0777);
+
+	if (fileSTRS<0){
+		write(2, "Erro na gravação do artigo no ficheiro STRINGS.txt!\n", 51);
+		exit(0);
+	}else{
+		lseek(fileSTRS,ref_nome*sizeof(NomeArtigo),SEEK_SET);
+		read(fileSTRS,nome,1);
+		close(fileSTRS);
+		write(1,nome,sizeof(nome));
+	}
+
+	printf("Nome do artigo dentro da função: %s\n",nome);
+return nome;
+}
+
 
 /*
 	Atraves do ficheiro ARTIGOS.txt, obter o artigo pelo seu ID
@@ -109,14 +142,19 @@ ArtigoFile art = malloc(sizeof(struct ArtigoF));
 		write(2, "Erro na gravação do artigo no ficheiro ARTIGOS.txt!\n", 51);
 		exit(0);
 	}else{
-		lseek(fileARTGS,atoi(id)*sizeof(art),SEEK_END);
+		lseek(fileARTGS,(-1)*atoi(id)*sizeof(art),SEEK_END);
 
 		read(fileARTGS,art,atoi(id)*sizeof(art));
 
 		write(1,art,4);
 	}
+	close(fileARTGS);
+
+
 
 	printf("ID do art: %d\n",art->id);
+	printf("REF_NOME do art: %c\n",getNome(art->ind_nome));
+	printf("PRECO do art: %c\n",art->preco);
 	return art->id;
 }
 
@@ -134,15 +172,18 @@ ArtigoFile art = malloc(sizeof(struct ArtigoF));
 */
 void insereArtigo(char* nome,char* preco){
 ArtigoFile art;
+NomeArtigo artName;
+
 char codArtigo[30];
 int fileARTGS = open("ARTIGOS.txt", O_CREAT | O_APPEND | O_RDWR, 0777);
 int fileSTRS = open("STRINGS.txt", O_CREAT | O_APPEND | O_RDWR, 0777);
 
 art = structArtigoFile(&fileARTGS,&fileSTRS,nome,preco);
+artName = structNomeArtigo(nome);
 
 	if(verifDescrt(fileARTGS,fileSTRS) == 0){
 
-		write(fileSTRS,nome,strlen(nome));
+		write(fileSTRS,artName,sizeof(artName));
 		/*
 			Quando é para escrever no ficheiro artigos um artigo (<id> <ref nome> <preco>) 
 			que é gravado é uma struct que contem os tres campos, id, ref nome e o preço.
@@ -156,7 +197,7 @@ art = structArtigoFile(&fileARTGS,&fileSTRS,nome,preco);
 	close (fileSTRS);
 
 	sprintf(codArtigo, "%d", art->id); // converte o id(float) da estrutura e converte e string
-
+	printf("Cod: Artigo: %d\n",art->id);
 	write(1,codArtigo,strlen(codArtigo)); // escreve no ecra o codigo do artigo
 
 
@@ -256,14 +297,6 @@ void editPrice(char* idArtigo, char* preco){
 
 }
 
-
-/*
-	Vai buscar ao ficheiro STRINGS.txt o nome de um artigo
-*/
-char* getNome(int *ficheiro, int idArtigo){
-
-return "x";
-}
 
 
 /*

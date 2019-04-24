@@ -31,6 +31,18 @@ typedef struct ArtigoF
 } *ArtigoFile;
 
 
+
+
+/*
+	Estrutura do nome do artigo
+*/
+typedef struct NomeArtigo
+{
+	char nome [128];
+	int dim; /*<- tamanho do nome*/
+}*NomeArtigo;
+
+
 /*
 	EStrutura de uma venda
 */
@@ -45,7 +57,7 @@ struct Venda
 
 ssize_t readln(int fildes, void *buf, size_t nbyte);
 int verifDescrt(int descArtig, int descStr);
-char* getNome(int *ficheiro, int idArtigo);
+char* getNome(int ref_nome);
 float getStock(int *ficheiro,int idArtigo);
 float getPrice(int *ficheiro, int idArtigo);
 void insereArtigo(char* nome,char* preco);
