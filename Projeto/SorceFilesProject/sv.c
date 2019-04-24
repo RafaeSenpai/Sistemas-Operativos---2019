@@ -15,7 +15,7 @@ int main(int argc, char const *argv[])
    int server_to_client;
    char *myfifo2 = "/tmp/server_to_client_fifo";
 
-   char buf[BUFSIZ];
+   char buf[1024];
 
    /* create the FIFO (named pipe) */
    mkfifo(myfifo, 0666);
@@ -27,9 +27,10 @@ int main(int argc, char const *argv[])
 
    printf("Server ON.\n");
 
+   
    while (1)
    {
-      read(client_to_server, buf, BUFSIZ); // LER O QUE O CLIENTE ESCREVE
+      read(client_to_server,buf,1024 ); // LER O QUE O CLIENTE ESCREVE
 
       if (strcmp("exit",buf)==0)
       {
@@ -44,7 +45,7 @@ int main(int argc, char const *argv[])
          write(server_to_client,buf,BUFSIZ);
       }
 
-      /* clean buf from any data */
+       //clean buf from any data 
       memset(buf, 0, sizeof(buf));
    }
 
