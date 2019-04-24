@@ -61,46 +61,6 @@ Stock criaStructStock(int nbArt,int quantidade){
 return newStk;
 }
 
-/*
-void insereArtigo(char* nome,char* preco){
-ArtigoFile art;
-NomeArtigo artName;
-
-char codArtigo[30];
-int fileARTGS = open("ARTIGOS.txt", O_CREAT | O_APPEND | O_RDWR, 0777);
-int fileSTRS = open("STRINGS.txt", O_CREAT | O_APPEND | O_RDWR, 0777);
-
-art = criaStructArtigo(&fileARTGS,&fileSTRS,nome,preco);
-artName = criaStructNomeArtigo(nome);
-
-	if(verifDescrt(fileARTGS,fileSTRS) == 0){
-
-		write(fileSTRS,artName,sizeof(artName));
-		
-		//	Quando é para escrever no ficheiro artigos um artigo (<id> <ref nome> <preco>) 
-		//	que é gravado é uma struct que contem os tres campos, id, ref nome e o preço.
-		
-		printf("Nome dentro da estrutura gravada no ficheiro STRINGS.txt:%s\n",artName->nome);
-
-
-		write(fileARTGS,art,sizeof(art));
-		ArtigoFile teste;
-		teste = malloc(sizeof(struct ArtigoF));
-		lseek(fileARTGS,sizeof(struct ArtigoF),SEEK_SET);
-		read(fileARTGS,teste,sizeof(struct ArtigoF));
-		printf("Preço dentro da estrutura gravada no ficheiro ARTIGOS.txt:%f\n",teste->preco);
-	}else{
-		verifDescrt(fileARTGS,fileSTRS);
-		exit(0);
-	}
-	close (fileARTGS);
-	close (fileSTRS);
-
-	sprintf(codArtigo, "%d", art->id); // converte o id(float) da estrutura e converte e string
-	printf("Cod: Artigo: %d\n",art->id);
-	write(1,codArtigo,strlen(codArtigo)); // escreve no ecra o codigo do artigo
-}
-*/
 
 void insereArtigo(char* nome,char* preco){
 int fdStr = open("STRINGS.txt", O_CREAT |O_RDWR, 0777);
@@ -126,7 +86,7 @@ ArtigoFile newArt = criaStructArtigo(nbArt,nbStr,nome,preco);
 	close(fdArt);
 
 
-int fdStK = open("SOTCKS.txt", O_CREAT | O_RDWR, 0777);
+int fdStK = open("STOCKS.txt", O_CREAT | O_RDWR, 0777);
 lseek(fdStK,0,SEEK_END);
 
 Stock newStk = criaStructStock(nbArt,0);
@@ -134,7 +94,8 @@ Stock newStk = criaStructStock(nbArt,0);
 	close(fdStK);
 
 	free(id);
-	free(new);
+	free(newArt);
+	free(newStk);
 }
 
 
@@ -170,21 +131,17 @@ int fdArt = open("ARTIGOS.txt", O_RDONLY, 0777);
 	Artigo art = malloc(sizeof(struct Artigo));
 
 	art->id = newArtF->id;
-
-
-	printf("Valor devolvido do getNome(newArtF->edr_nome):%s\n",getNome(newArtF->edr_nome));
-	printf("Valor devolvido do getNome(newArtF->edr_nome):%d\n",getStock(newArtF->id));
-	
-	strcpy(art->nome,getNome(newArtF->edr_nome));
-
-
+	art->nome = getNome(newArtF->edr_nome);
 	art->preco = newArtF->preco;
 	art->stock = getStock(newArtF->id);
-/*
-	printf("id:%d\n",newArtF->id);
-	printf("id do nome em Strings.txt:%d\n",newArtF->edr_nome);
-	printf("Preço:%f\n",newArtF->preco);
-	printf("Endereço da estrutura:%p\n",newArtF);
-*/
+
+	/*
+		//Imprimir o conteudo da estrutura generica do artigo
+		printf("Conteudo da esrutura de dados 'Artigo':%p\n",art);
+		printf("ID: %d\n",art->id);
+		printf("Nome: %s\n",art->nome);
+		printf("Preço: %f\n",art->preco);
+		printf("Stock: %d\n",art->stock);
+	*/
 	return art;
 }
