@@ -32,7 +32,6 @@ FILE *ficheiroSTRINGS;
 				numLinhas++;
 			}
 		}
-
 		fclose(ficheiroSTRINGS);
 	}
 return numLinhas;

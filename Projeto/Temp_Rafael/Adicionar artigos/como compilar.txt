@@ -1,0 +1,1 @@
+gcc -Wall addArtigos.c api.c -o addArtigos
