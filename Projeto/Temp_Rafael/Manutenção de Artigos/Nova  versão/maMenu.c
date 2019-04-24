@@ -10,11 +10,13 @@ char instrucao;
 	
 	switch(instrucao){
 		case 'i':
-			insereArtigo( takeNomeBuff(buffer), takePrecoBuff(buffer)); 
+			insereArtigo( takeNomeBuffI(buffer), takePrecoBuff(buffer));
+			printf("\n"); 
 			break;
 		case 'n':
 			/*n <código> <novo nome> --> altera nome do artigo*/
-			//editaNome(takeIDBuff(buffer));
+			editaNome(takeIDBuff(buffer),takeNomeBuffN(buffer));
+			printf("\n");
 			break;
 		case 'p':
 			/*p <código> <novo preço>   --> altera preço do artigo*/
@@ -23,6 +25,7 @@ char instrucao;
 		case 't':	
 			/*ESTE MENU 't' É APENAS PARA TESTAR FUNÇÕES, SERÁ REMOVIDO DE FUTURO*/
 			getArtigo(takeIDBuff(buffer));
+			printf("\n");
 		break;
 		default:
 			printf("Opção inválida!\n");

@@ -2,7 +2,7 @@
 #define maPARSERS_h
 #include <string.h>
 #include <ctype.h>
-
+#include <stdlib.h> //mallocs
 /*
 	Remove do buffer todos os espaços a mais no inicio, no final e entre 
 	as palavras ou caracters.
@@ -31,7 +31,7 @@ char takeInstBuff(char* buffer);
 /*
 	Retirar do buffer o nome do artigo
 */
-char* takeNomeBuff(char* buffer);
+char* takeNomeBuffI(char* buffer);
 
 /*
 	Retira do buffer o preço do artigo
@@ -42,4 +42,7 @@ char* takePrecoBuff(char* buffer);
 	Retira do buffer o ID do artigo
 */
 char* takeIDBuff(char* buff);
+
+
+char* takeNomeBuffN(char* buffer);
 #endif

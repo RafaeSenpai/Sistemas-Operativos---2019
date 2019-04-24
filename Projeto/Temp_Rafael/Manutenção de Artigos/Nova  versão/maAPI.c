@@ -134,14 +134,66 @@ int fdArt = open("ARTIGOS.txt", O_RDONLY, 0777);
 	art->nome = getNome(newArtF->edr_nome);
 	art->preco = newArtF->preco;
 	art->stock = getStock(newArtF->id);
-
 	/*
 		//Imprimir o conteudo da estrutura generica do artigo
 		printf("Conteudo da esrutura de dados 'Artigo':%p\n",art);
 		printf("ID: %d\n",art->id);
 		printf("Nome: %s\n",art->nome);
-		printf("Preço: %f\n",art->preco);
+		printf("Preço: %.2f\n",art->preco);
 		printf("Stock: %d\n",art->stock);
 	*/
+	close(fdArt);
+	free(newArtF);
 	return art;
+}
+
+
+
+/*FAZER UMA FUNÇÃO QUE VERIFICA SE O ARTIGO EXISTE E CASO NAO EXISTA NÃO É 
+ADICIONADO NENHUM NOME AO FICHEIRO STRINGS NEM ATUALIZADO NENHUM REGISTO NO FICHEIRO ARTIGOS*/
+
+
+
+/*
+	Observação: O ficheiro STRINGS.txt tem que já existir! 
+*/
+void editaNome(char* id, char* nome){
+//---------------NÃO ESTÁ A SER PASSADO O NOME DO ARTIGO CORRETAMENTE, OS PARSERS NÃO ESTAO A FUNCIONAR PARA A FUNCIONALIDADE DE EDITA NOME POIS NAO ESTAO A CAPTURAR O CONTEUDO CORRETAMENTE
+int fdStr = open("STRINGS.txt", O_RDWR | O_APPEND, 0777);
+			//printf("NOME PASSADO COMO PARAMETRO A editaNome():%s\n",nome);
+	write(fdStr,nome,strlen(nome));
+int nbStr = lseek(fdStr,0,SEEK_END);//nbStr: numero de bytes lidos até ao final do ficheiro
+
+int fdArt = open("ARTIGOS.txt,", O_RDWR, 0777);
+ArtigoFile tmp = malloc(sizeof(struct ArtigoF));
+	lseek(fdArt,atoi(id)*sizeof(struct ArtigoF),SEEK_SET);
+	read(fdArt,tmp,sizeof(struct ArtigoF));
+	tmp->edr_nome = nbStr;
+	write(fdArt,tmp,sizeof(struct ArtigoF));
+
+	
+		//Imprimir o conteudo da estrutura generica do artigo
+		printf("Conteudo da esrutura de dados 'Artigo' tmp:%p\n",tmp);
+		printf("ID: %d\n",tmp->id);
+		printf("Nome: %d\n",tmp->edr_nome);
+		printf("Preço: %.2f\n",tmp->preco);
+	
+
+
+	free(tmp);
+	close(fdStr);
+	close(fdArt);
+
+
+/*
+
+
+1º abrir o STRINGS
+2º guardar o nome na ultima posição do strings e guardar para um int o nb de bits lidos nesse ficheiro
+3º abrir o ARTIGOS
+4º localizar o artigo com o id passado(getArtigo)
+5º alterar o campo ref_nome desse artigo obtido no passo anterior para o valor de nb obtido no passo 2
+*/
+
+
 }

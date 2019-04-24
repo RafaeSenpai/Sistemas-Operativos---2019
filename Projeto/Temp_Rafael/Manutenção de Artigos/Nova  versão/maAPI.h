@@ -40,6 +40,7 @@ typedef struct Stock{
 	int stock;
 } *Stock;
 
+
 /*
 	Faz a leitura, caracter a caracter, de um descritor de ficheiros e para a leitura quando deteta um '\n'
 */
@@ -78,6 +79,7 @@ ArtigoFile criaStructArtigo(int nbArt, int nbStr, char* name,char* price);
 */
 Stock criaStructStock(int nbArt, int quantidade);
 
+
 /*
 	Dado o nome e o preço de artigo, é adicionada a informação do mesmo no ficheiro ARTIGOS.txt, nomeadamente 
 	os atributos, ID, nome e preço (guardados numa struct). Também é criado um ficheiro STRINGS.txt com o 
@@ -100,6 +102,7 @@ void insereArtigo(char* nome,char* preco);
 */
 char* getNome(int id);
 
+
 /*
 	Dado o ID de uma artigo devolve o stock do mesmo.
 	Se existir o ID inserido não existir retorna 0.
@@ -117,6 +120,8 @@ int getStock(int id);
 */
 Artigo getArtigo(char* id);
 
+
+void editaNome(char* id, char* nome);
 
 
 

@@ -1,14 +1,5 @@
 #include "maPARSERS.h"
-
-
-
-/*
-	Variaveis locais
-*/
-char nomeArtigo[128];
-char pr[1014];
-char id[10];
-
+#include <stdio.h> //<---------------------------------------PARA ELIMINAR DEPOIS DOS TESTES
 
 char* remSpc (char* buffer){ 
 int l,e;
@@ -44,7 +35,7 @@ int i = 0;
 			i++;
 		}
 		if(buffer[i+1]!=' '){
-			//apenas um comando não interpretavel
+			//w: apenas um comando não interpretavel
 			return 'w';		
 		}
 		return buffer[i];
@@ -57,13 +48,14 @@ int i = 0;
 
 
 
-char* takeNomeBuff(char* buffer){
+char* takeNomeBuffI(char* buffer){
+char* nomeArtigo = malloc(128*sizeof(char));
 int j, i, max;
 
-	for(max=strlen(buffer)-1; buffer[max]!=' '; max--);//coloca-se na posição onde começa o preço
+	for(max=strlen(buffer)-1; buffer[max]!=' '; max--);
 
 	for(j=0,i=2; i<=max; i++){
-		if( isalpha(buffer[i]) || buffer[i]<=' '){
+		if( isalpha(buffer[i]) || buffer[i]!=' '){
 			nomeArtigo[j]=buffer[i];
 			j++;
 		}
@@ -72,6 +64,26 @@ int j, i, max;
 
 return nomeArtigo;
 }
+
+
+char* takeNomeBuffN(char* buffer){ //--------------------NÃO ESTÁ FUNCIONAL
+char* nomeArtigo = malloc(128*sizeof(char));
+int j, i, max;
+
+printf("Conteudo do buffer no takeNomeBuff:%s\n",buffer);//---------------------------------------PARA ELIMINAR DEPOIS DOS TESTES
+max = strlen(buffer);
+	for(j=0,i=2; i<=max; i++){
+		if( isalpha(buffer[i]) || buffer[i]==' '){
+			nomeArtigo[j]=buffer[i];
+			j++;
+		}
+	}
+	nomeArtigo[j-1]='\n';
+	printf("Output  no takeNomeBuff:%s\n",nomeArtigo);//---------------------------------------PARA ELIMINAR DEPOIS DOS TESTES
+
+return nomeArtigo;
+}
+
 
 
 
@@ -83,7 +95,7 @@ return nomeArtigo;
 char* takePrecoBuff(char* buffer){
 int i,j;
 i = strlen(buffer)-1;
-
+char* pr = malloc(128*sizeof(char));
 	/*
 		Parte do final da string do buffer e vai andando para trás até encontrar 1 espaço. 
 		Nesta altura é suposto estarmos no inicio do preço do artigo na string
@@ -111,8 +123,8 @@ return pr;
 char* takeIDBuff(char* buff){
 int j;
 int i = strlen(buff)-1;
-//char id[i]; //<---- tive que declarar esta variavel como publica snão dava warning
-
+char* id = malloc(10*sizeof(char));
+printf("Conteudo do buffer no takeIDBuff:%s\n",buff);//---------------------------------------PARA ELIMINAR DEPOIS DOS TESTES
 	/*O while imediatamente a baixo é a solução alternativa ao bug da função que remove espaços, menos 
 	os espaços do final da string(fica sempre um espaço no final da string)*/
 	while(buff[i]==' '){
@@ -130,6 +142,6 @@ int i = strlen(buff)-1;
 	}
 	
 	id[j]='\0';
-
+printf("Output  no takeIDBuff:%s\n",id);//---------------------------------------PARA ELIMINAR DEPOIS DOS TESTES
 return id;
 }
