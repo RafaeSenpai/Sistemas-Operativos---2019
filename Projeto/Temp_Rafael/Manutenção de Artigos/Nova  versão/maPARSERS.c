@@ -66,12 +66,10 @@ return nomeArtigo;
 }
 
 
-char* takeNomeBuffN(char* buffer){ //--------------------NÃO ESTÁ FUNCIONAL
-char* nomeArtigo = malloc(128*sizeof(char));
-int j, i, max;
 
-printf("Conteudo do buffer no takeNomeBuff:%s\n",buffer);//---------------------------------------PARA ELIMINAR DEPOIS DOS TESTES
-max = strlen(buffer);
+/*
+
+
 	for(j=0,i=2; i<=max; i++){
 		if( isalpha(buffer[i]) || buffer[i]==' '){
 			nomeArtigo[j]=buffer[i];
@@ -84,7 +82,7 @@ max = strlen(buffer);
 return nomeArtigo;
 }
 
-
+*/
 
 
 /*
@@ -145,3 +143,6 @@ printf("Conteudo do buffer no takeIDBuff:%s\n",buff);//-------------------------
 printf("Output  no takeIDBuff:%s\n",id);//---------------------------------------PARA ELIMINAR DEPOIS DOS TESTES
 return id;
 }
+
+
+

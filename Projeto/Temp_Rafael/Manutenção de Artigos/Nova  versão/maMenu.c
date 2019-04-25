@@ -1,21 +1,30 @@
 #include "maMenu.h"
 
 void menuComandos(char* buffer){
-char instrucao;
-	
+
 	/*
 		takeInstBuff: Função responsavel pela leitura e da instrução constida na leitura do terminal
 	*/
-	instrucao = takeInstBuff(buffer);
-	
-	switch(instrucao){
+char* param1 = strtok(buffer," ");
+char* param2 = strtok(NULL," ");
+char* param3 = strtok(NULL," ");
+/*
+printf("1º valor devolvido pelo strtok:%s\n",param1);
+printf("2º valor devolvido pelo strtok:%s\n",param2);
+printf("3º valor devolvido pelo strtok:%s\n\n\n",param3);
+*/
+	switch(*param1){
 		case 'i':
-			insereArtigo( takeNomeBuffI(buffer), takePrecoBuff(buffer));
+/*			printf("2º valor devolvido pelo strtok no case: i:%s\n",param2);
+			printf("3º valor devolvido pelo strtok no case: i:%s\n\n\n",param3);
+*/			insereArtigo(param2,param3);
 			printf("\n"); 
 			break;
 		case 'n':
-			/*n <código> <novo nome> --> altera nome do artigo*/
-			editaNome(takeIDBuff(buffer),takeNomeBuffN(buffer));
+/*			printf("2º valor devolvido pelo strtok no case: n:%s\n",param2);
+			printf("3º valor devolvido pelo strtok no case: n:%s\n\n\n",param3);
+*/			/*n <código> <novo nome> --> altera nome do artigo*/
+			editaNome(param2,param3);
 			printf("\n");
 			break;
 		case 'p':
@@ -24,7 +33,8 @@ char instrucao;
 			break;
 		case 't':	
 			/*ESTE MENU 't' É APENAS PARA TESTAR FUNÇÕES, SERÁ REMOVIDO DE FUTURO*/
-			getArtigo(takeIDBuff(buffer));
+//			printf("2º valor devolvido pelo strtok no case: t:%s\n",param2);
+			getArtigo(param2);
 			printf("\n");
 		break;
 		default:

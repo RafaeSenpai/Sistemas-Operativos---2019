@@ -44,5 +44,4 @@ char* takePrecoBuff(char* buffer);
 char* takeIDBuff(char* buff);
 
 
-char* takeNomeBuffN(char* buffer);
 #endif

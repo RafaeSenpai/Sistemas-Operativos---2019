@@ -65,7 +65,7 @@ int verifDescrt(int descArtig, int descStr);
 	.nbArt: numero de bytes lidos até ao final do ficheiro ARTIGOS.txt
 	.nbStr: numero de bytes lidos até ao final do ficheiro STOCKS.txt
 */
-ArtigoFile criaStructArtigo(int nbArt, int nbStr, char* name,char* price);
+ArtigoFile criaStructArtigo(int nbArt, int nbStr, char* price);
 
 
 /*
