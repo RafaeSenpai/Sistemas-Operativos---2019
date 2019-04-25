@@ -50,32 +50,26 @@ int main(int argc, char const *argv[])
    /* write str to the FIFO */
    while(1){
             int n;
-            write(0,"cmd message to serwer: \n",25);
             char str[1024];
-           // str=malloc(sizeof(BUFSIZ));
-            while((n=read(0,str,1024))>0){
-                  write(1,str,n);
-                   write(client_to_server, str,n);
-            }
-            //eliminate_spaces(str);
+            // str=malloc(sizeof(BUFSIZ));
+            while((n=read(0,str,sizeof(str)))>0){
+                write(1,"cmd message to serwer: \n",25);
+                write(1,str,n);
+                write(client_to_server, str,n);
+          		  perror("Write:"); //Very crude error check
+          		  read(server_to_client,str,1024);
+          		  perror("Read:"); // Very crude error check
+                write(1,"----------\n",11);
+                write(1,str,n);  
+                //memset(str, 0, sizeof(str-1));
 
-
-   			
-
-		   //write(client_to_server, &str, sizeof(*str));
-
-		   perror("Write:"); //Very crude error check
-
-		   read(server_to_client,str,sizeof(*str));
-
-		   perror("Read:"); // Very crude error check
-
-		   printf("...received from the server: %s\n",&str);
-		   //close(client_to_server);
-		   //close(server_to_client);
+		  
 
 		   /* remove the FIFO */
-
+     }
+      
 	}
+      close(client_to_server);
+      close(server_to_client);
  	  return 0;
 }
