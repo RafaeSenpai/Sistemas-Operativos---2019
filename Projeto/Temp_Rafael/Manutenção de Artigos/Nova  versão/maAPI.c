@@ -47,10 +47,6 @@ ArtigoFile new = malloc(sizeof(struct ArtigoF));
 	new->edr_nome = nbStr;//new->id fica com o nº de bytes lidos até ao final do ficheiro STRINGS
 	new->preco = atof(price);
 
-
-	printf("new->preco: %s\n",price);
-	printf("new->preco: %f\n",atof(price));
-	printf("new->preco: %f\n",new->preco);
 return new;
 }
 
@@ -88,7 +84,7 @@ ArtigoFile newArt = criaStructArtigo(nbArt,nbStr,preco);
 
 	sprintf(id,"%d",newArt->id);
 
-	write(1,id,sizeof(int));
+	write(1,id,sizeof(int));//<---provavelmente dará problemas aquando houver IDs com mais que 4 caracteres
 	close(fdArt);
 
 
@@ -142,15 +138,16 @@ int fdArt = open("ARTIGOS.txt", O_RDONLY, 0777);
 	art->stock = getStock(newArtF->id);
 	
 		//Imprimir o conteudo da estrutura generica do artigo
-printf("----------------FICHA DE ARTIGO-------------\n");
+		printf("----------------FICHA DE ARTIGO-------------\n");
 		printf("Conteudo da esrutura de dados 'Artigo':%p\n",art);
 		printf("ID: %d\n",art->id);
 		printf("Nome: %s\n",art->nome);
 		printf("Preço: %f\n",art->preco);
 		printf("Stock: %d\n",art->stock);
-	
+
+	free(newArtF);	
 	close(fdArt);
-	free(newArtF);
+	free(art);//<-------sem isto, quando fazemos procurar alguns artigos e na ultima procura fazemos a procura de um artigo que nao existe, os dados que são apresentados sao os dados do ultimo artigo existente que foi devolvido 
 	return art;
 }
 
@@ -162,11 +159,8 @@ ADICIONADO NENHUM NOME AO FICHEIRO STRINGS NEM ATUALIZADO NENHUM REGISTO NO FICH
 
 
 /*
-	Observação: O ficheiro STRINGS.txt tem que já existir! 
+		ULTIMA VERSÃO DA FUNÇÃO DE EDITAR O NOME DO ARTIGO
 */
-
-
-
 void editaNome(char* id, char* nome){
 int fdART = open("ARTIGOS.txt",O_RDWR);
 int fdSTR = open("STRINGS.txt",O_RDWR | O_APPEND);

@@ -5,6 +5,7 @@ void menuComandos(char* buffer){
 	/*
 		takeInstBuff: Função responsavel pela leitura e da instrução constida na leitura do terminal
 	*/
+
 char* param1 = strtok(buffer," ");
 char* param2 = strtok(NULL," ");
 char* param3 = strtok(NULL," ");
