@@ -19,7 +19,7 @@ printf("3º valor devolvido pelo strtok:%s\n\n\n",param3);
 /*			printf("2º valor devolvido pelo strtok no case: i:%s\n",param2);
 			printf("3º valor devolvido pelo strtok no case: i:%s\n\n\n",param3);
 */			insereArtigo(param2,param3);
-			printf("\n"); 
+			printf("\n");
 			break;
 		case 'n':
 /*			printf("2º valor devolvido pelo strtok no case: n:%s\n",param2);
@@ -30,9 +30,9 @@ printf("3º valor devolvido pelo strtok:%s\n\n\n",param3);
 			break;
 		case 'p':
 			/*p <código> <novo preço>   --> altera preço do artigo*/
-			//editaPreco(takeIDBuff(buffer));
+			editaPreco(param2, param3);
 			break;
-		case 't':	
+		case 't':
 			/*ESTE MENU 't' É APENAS PARA TESTAR FUNÇÕES, SERÁ REMOVIDO DE FUTURO*/
 //			printf("2º valor devolvido pelo strtok no case: t:%s\n",param2);
 			getArtigo(param2);

@@ -109,6 +109,11 @@ char* getNome(int id);
 */
 int getStock(int id);
 
+/*
+  Dado o código de um artigo e um preço edita o preço do artigo
+*/
+void editaPreco(char* cod, char* preco);
+
 
 /*
 	Dado o ID de um artigo, devolve uma estrutura (generica) do artigo, isto é devolve
