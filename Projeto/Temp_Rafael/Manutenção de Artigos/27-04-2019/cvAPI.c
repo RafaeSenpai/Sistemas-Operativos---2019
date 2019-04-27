@@ -1,5 +1,29 @@
 #include "cvAPI.h"
 
+/*
+	Estrutura do artigo no ficheiro artigos
+*/
+struct ArtigoF
+{
+    int id;
+    int edr_nome; 
+    float preco;
+};
+
+
+/*
+	Estrutura generica do artigo
+*/
+struct Artigo{
+	int id;
+	char* nome;
+	float preco;
+	int stock;
+};
+
+
+
+
 ssize_t readln(int fildes, void *buf, size_t nbyte){
 int n;
 char c;
@@ -23,49 +47,111 @@ ssize_t nbytes = 0;
 }
 
 
-void atualizaStock(char* cod, char* qt){ //-------------------------nao parece que esteja a guardar diretio
+void atualizaStock(char* cod, char* qt){ //---------------------------------------FUNCIONAL
 int fdSTK = open("STOCKS.txt",O_RDWR);
+char* msg = malloc(100*sizeof(char));
+int qtdAtual = 0;
+int newStock = 0;
 
 	lseek(fdSTK, atoi(cod)*sizeof(int),SEEK_SET);
+	read(fdSTK,&qtdAtual,sizeof(int));
 	
-	char *qtd = malloc(sizeof(char) * 30);
-	sprintf(qtd,"%d",atoi(qt));
-	
-	write(fdSTK, qtd,sizeof(int));
-	write(1,qtd,sizeof(int));
-	close(fdSTK);
+	newStock = qtdAtual + (atoi(qt));
+	lseek(fdSTK,(-1)*sizeof(int),SEEK_CUR);//<--- reposicionamento para o local onde se quer colocar o stock atualizado
+	write(fdSTK,&newStock,sizeof(int));
 
+
+	sprintf(msg,"Novo stock: %d\n",newStock);
+	write(1,msg,strlen(msg));
+	
+	close(fdSTK);
+	free(msg);
 }
 
 
 
 /*
-	FUnção responsavel por devolver o valor do stock de um artigo com um dado ID
-	NOTA: não imprime nada no terminal, apenas retorna o valor do stock
+	Tendo em conta os requisitos exigidos pelo projeto, esta função é considerada 
+	uma função interna, pois apenas é usada pela função getStockAndPrice(..), função 
+	esta que responde a uma das exigencias do enunciado do projeto. Contudo o 
+	seu prototipo encontra-se na API pois pode ter utilidade para o developer para 
+	debug se necessário.
 */
-int getStock(char* id){ //------------------------------------------------------------------funciona direito
+void getStock(char* id){ //-------------------------------------------------------FUNCIONAL
 int fdStK = open("STOCKS.txt", O_RDONLY);
-int stk;
-
-	lseek(fdStK,atoi(id)*sizeof(int),SEEK_SET);
-	read(fdStK,&stk,sizeof(int));	
-	close(fdStK);
-
-	return stk; //retorna o stock para o caso de dar jeito usar um output valido da função 
-}
-
-
-
-void getStockAndPrice(char* id){ //--------------------------------INCOMPLETO
-int fdStK = open("STOCKS.txt", O_RDONLY);
+char* msg = malloc(100*sizeof(char));
 int stk;
 
 	lseek(fdStK,atoi(id)*sizeof(int),SEEK_SET);
 	read(fdStK,&stk,sizeof(int));
-
-	char *qtd = malloc(sizeof(char) * 30);
-	sprintf(qtd,"%d",stk);//escrve o stk para string
-	write(1,qtd,sizeof(int)); //imprime no ecra o stock
+	sprintf(msg,"Stock: %d\n",stk);	
+	write(1, msg, strlen(msg));
 	
 	close(fdStK);
+	free(msg);
+}
+
+
+/*
+	Tendo em conta os requisitos exigidos pelo projeto, esta função é considerada 
+	uma função interna, pois apenas é usada pela função getStockAndPrice(..), função 
+	esta que responde a uma das exigencias do enunciado do projeto. Contudo o 
+	seu prototipo encontra-se na API pois pode ter utilidade para o developer para 
+	debug se necessário.
+*/
+void getPreco(char* id){//-------------------------------------------------------FUNCIONAL
+int fdART = open("ARTIGOS.txt",O_RDWR);
+char* msg = malloc(100*sizeof(char));
+float catchincatchin;
+
+	lseek(fdART,atoi(id)*sizeof(struct ArtigoF)+sizeof(int)+sizeof(int),SEEK_SET);
+	read(fdART,&catchincatchin,sizeof(float));
+	sprintf(msg,"Preço: %.2f\n",catchincatchin);
+	write(1,msg,strlen(msg));
+
+	close(fdART);
+	free(msg);
+}
+
+
+
+void getStockAndPrice(char* id){ //---------------------------------------------FUNCIONAL
+
+	getStock(id);
+	getPreco(id);
+}
+
+
+void menuComandos(char* buffer){//----------------------------------------------FUNCIONAL
+char* param1 = strtok(buffer," ");
+char* param2 = strtok(NULL," ");
+int countParams = 0;
+
+	
+		while(countParams==0){
+			if(param1 && param2){
+				countParams = 2;
+			}else if(param1 || param2){
+				countParams = 1;				
+			}
+		}
+
+	
+		
+		switch(countParams){
+			case 1:
+				/*<código_numérico> --> mostra no stdout stock e preço*/
+				getStockAndPrice(param1);
+				write(1,"\n\n",1);
+				break;
+			case 2:
+				/*<código_numérico> <quantidade> --> actualiza stock e mostra novo stock*/
+				atualizaStock(param1,param2);
+				write(1,"\n\n",2);
+				break;
+			default:
+				system("clear");
+				write(1,"Opção inválida!\nInsira novo comando:\n",41);
+		}
+
 }

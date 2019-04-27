@@ -1,49 +1,34 @@
 #ifndef cvAPI_h
 #define cvAPI_h
 
-#include <string.h> //strlen - strcpy
+#include <string.h> //strlen - strcpy - strtok
 #include <unistd.h> //system calls
 #include <fcntl.h> //file descriptor
 #include <stdlib.h> //atof
-#include <stdio.h>	//printfs
+#include <stdio.h>	//sprintf
 
 /*
 	Estrutura do artigo no ficheiro artigos
 */
-typedef struct ArtigoF
-{
-    int id;
-    int edr_nome; 
-    float preco;
-} *ArtigoFile;
+typedef struct ArtigoF *ArtigoFile;
 
 
 /*
 	Estrutura generica do artigo
 */
-typedef struct Artigo{
-	int id;
-	char* nome;
-	float preco;
-	int stock;
-} *Artigo;
+typedef struct Artigo *Artigo;
+
+
 
 
 /*
-	Estrutura da informação relativa ao stock de um Artigo
-	.id_Artigo: ID do artigo
-	.stock: Stock relativo ao artigo
+	Faz a leitura, caracter a caracter, de um descritor de ficheiros e para a leitura quando deteta um '\n'
 */
-typedef struct Stock{
-	int id_Artg;
-	int stock;
-} *Stock;
-
-
-
 ssize_t readln(int fildes, void *buf, size_t nbyte);
 void atualizaStock(char* cod, char* qt);
-int getStock(char* id);
+void getStock(char* id);
+void getPrice(char* id);
 void getStockAndPrice(char* id);
+void menuComandos(char* buffer);
 
 #endif

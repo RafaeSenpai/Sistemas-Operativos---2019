@@ -34,16 +34,11 @@ ssize_t readln(int fildes, void *buf, size_t nbyte);
 /*
 	Dado o nome e o preço de artigo, é adicionada a informação do mesmo no ficheiro ARTIGOS.txt, nomeadamente 
 	os atributos, ID, nome e preço (guardados numa struct). Também é criado um ficheiro STRINGS.txt com o 
-	respetivo nome do produto e outro ficheiro com o respetivo stock do mesmo(este ultimo é guardado também 
-	na forma de uma struct).
+	respetivo nome do produto e outro ficheiro com o respetivo stock do mesmo.
 	Os atributos da estrutura guardada em ARTIGOS.txt:
 	-ID
 	-edr_nome
 	-preco
-
-	Os atributos da estrutura guardada em STOCKS.txt:
-	-id_Artigo
-	-Stock
 */
 void insereArtigo(char* nome,char* preco);
 
@@ -56,7 +51,7 @@ char* getNome(int id);
 
 /*
 	Dado o ID de uma artigo devolve o stock do mesmo.
-	Se existir o ID inserido não existir retorna 0.
+	Se não existir o ID inserido retorna 0.
 */
 int getStock(int id);
 
@@ -76,7 +71,6 @@ Artigo getArtigo(char* id);
 
 
 void editaNome(char* id, char* nome);
-
 
 
 void menuComandos(char* buffer);

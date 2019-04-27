@@ -85,15 +85,16 @@ ArtigoFile newArt = criaStructArtigo(nbArt,nbStr,preco);
 	sprintf(id,"%d",newArt->id);
 
 	write(1,id,sizeof(int));//<---provavelmente dará problemas aquando houver IDs com mais que 4 caracteres
+	free(id);
 	close(fdArt);
+	free(newArt);
 
 int quant = 0;
 int fdStK = open("STOCKS.txt", O_CREAT | O_RDWR | O_APPEND, 0777);
+	
 	write(fdStK,&quant,sizeof(int));
 	close(fdStK);
-
-	free(id);
-	free(newArt);
+	
 }
 
 
@@ -104,8 +105,9 @@ int fdStr = open("STRINGS.txt", O_RDONLY, 0777);
 char* nome = malloc(100*sizeof(char));
 	
 	lseek(fdStr,edr_nome,SEEK_SET);
-	readln(fdStr,nome,100);
-
+	readln(fdStr,nome,100); //se colocar no lugar do 100, strlen(nome) o nome do artigo deixa de aparecer
+	close(fdStr);
+//Não posso fazer free do malloc desta função porque não perco a informação que quero retornar
 	return nome;
 }
 
@@ -115,6 +117,8 @@ int fdStK = open("STOCKS.txt", O_RDONLY, 0777);
 int stk = 0;
 	lseek(fdStK,id*sizeof(int),SEEK_SET);
 	read(fdStK,&stk,sizeof(int));
+	close(fdStK);
+
 	return stk;
 }
 
@@ -132,6 +136,7 @@ char* msg = malloc(200*sizeof(char));
 	sprintf(msg, "Endereço da estrutura de dados devolvida: %p\nID: %d\nNome: %s\nPreço: %.2f\nStock: %d\n",art,art->id,art->nome,art->preco,art->stock);
 	write(1, msg,200);
 	write(1,"-------------------------------------------------\n",50);
+	free(msg);
 
 }
 
@@ -153,6 +158,11 @@ int fdArt = open("ARTIGOS.txt", O_RDONLY, 0777);
 	free(newArtF);	
 	close(fdArt);
 
+/*
+	Não posso fazer free do malloc (art) desta função porque snão perco a informação que quero 
+	retornar, mas em contra partida quando faço get de uma artigo que nao existe este devolve-me 
+	parte da informação relativa a um artigo existente
+*/
 	return art;
 }
 
@@ -188,7 +198,8 @@ int fdART = open("ARTIGOS.txt",O_RDWR);
 
 	lseek(fdART,atoi(id)*sizeof(struct ArtigoF)+sizeof(int)+sizeof(int),SEEK_SET);
 	catchincatchin = atof(makeItRain);
-	write(fdART, &catchincatchin, sizeof(int));
+	write(fdART, &catchincatchin, sizeof(float));
+	close(fdART);
 }	
 
 
@@ -229,5 +240,6 @@ char* msg = malloc(50*sizeof(char));
 			system("clear");
 			write(1,"Opção inválida!\nInsira novo comando:\n",41);
 	}
+	free(msg);
 
 }
