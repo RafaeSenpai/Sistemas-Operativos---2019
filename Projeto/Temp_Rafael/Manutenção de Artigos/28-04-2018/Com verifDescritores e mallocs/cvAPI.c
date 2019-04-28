@@ -24,7 +24,7 @@ struct Artigo{
 
 
 
-ssize_t readln(int fildes, void *buf, size_t nbyte){
+ssize_t cvReadln(int fildes, void *buf, size_t nbyte){
 int n;
 char c;
 char *buffer = (char *)buf;
@@ -53,19 +53,24 @@ char* msg = malloc(100*sizeof(char));
 int qtdAtual = 0;
 int newStock = 0;
 
-	lseek(fdSTK, atoi(cod)*sizeof(int),SEEK_SET);
-	read(fdSTK,&qtdAtual,sizeof(int));
-	
-	newStock = qtdAtual + (atoi(qt));
-	lseek(fdSTK,(-1)*sizeof(int),SEEK_CUR);//<--- reposicionamento para o local onde se quer colocar o stock atualizado
-	write(fdSTK,&newStock,sizeof(int));
-
-
-	sprintf(msg,"Novo stock: %d\n",newStock);
-	write(1,msg,strlen(msg));
-	
-	close(fdSTK);
-	free(msg);
+	if(fdSTK>-1){
+		lseek(fdSTK, atoi(cod)*sizeof(int),SEEK_SET);
+		read(fdSTK,&qtdAtual,sizeof(int));
+		
+		newStock = qtdAtual + (atoi(qt));
+		lseek(fdSTK,(-1)*sizeof(int),SEEK_CUR);//<--- reposicionamento para o local onde se quer colocar o stock atualizado
+		write(fdSTK,&newStock,sizeof(int));
+		close(fdSTK);
+		if(msg){
+			sprintf(msg,"Novo stock: %d\n",newStock);
+			write(1,msg,strlen(msg));
+			free(msg);
+		}else{
+			catchError(ERROR_12);
+		}
+	}else{
+		catchError(ERROR_9);
+	}
 }
 
 
@@ -77,18 +82,25 @@ int newStock = 0;
 	seu prototipo encontra-se na API pois pode ter utilidade para o developer para 
 	debug se necessário.
 */
-void getStock(char* id){ //-------------------------------------------------------FUNCIONAL
+void cvGetStock(char* id){ //-------------------------------------------------------FUNCIONAL
 int fdStK = open("STOCKS.txt", O_RDONLY);
 char* msg = malloc(100*sizeof(char));
 int stk;
 
-	lseek(fdStK,atoi(id)*sizeof(int),SEEK_SET);
-	read(fdStK,&stk,sizeof(int));
-	sprintf(msg,"Stock: %d\n",stk);	
-	write(1, msg, strlen(msg));
-	
-	close(fdStK);
-	free(msg);
+	if(fdStK){
+		lseek(fdStK,atoi(id)*sizeof(int),SEEK_SET);
+		read(fdStK,&stk,sizeof(int));
+		close(fdStK);
+		if(msg){
+			sprintf(msg,"Stock: %d\n",stk);	
+			write(1, msg, strlen(msg));
+			free(msg);
+		}else{
+			catchError(ERROR_13);
+		}
+	}else{
+		catchError(ERROR_10);
+	}
 }
 
 
@@ -104,25 +116,32 @@ int fdART = open("ARTIGOS.txt",O_RDWR);
 char* msg = malloc(100*sizeof(char));
 float catchincatchin;
 
-	lseek(fdART,atoi(id)*sizeof(struct ArtigoF)+sizeof(int)+sizeof(int),SEEK_SET);
-	read(fdART,&catchincatchin,sizeof(float));
-	sprintf(msg,"Preço: %.2f\n",catchincatchin);
-	write(1,msg,strlen(msg));
-
-	close(fdART);
-	free(msg);
+	if(fdART){
+		lseek(fdART,atoi(id)*sizeof(struct ArtigoF)+sizeof(int)+sizeof(int),SEEK_SET);
+		read(fdART,&catchincatchin,sizeof(float));
+		close(fdART);
+		if(msg){
+			sprintf(msg,"Preço: %.2f\n",catchincatchin);
+			write(1,msg,strlen(msg));
+			free(msg);
+			}else{
+				catchError(ERROR_14);
+			}
+	}else{
+		catchError(ERROR_11);
+	}
 }
 
 
 
 void getStockAndPrice(char* id){ //---------------------------------------------FUNCIONAL
 
-	getStock(id);
+	cvGetStock(id);
 	getPreco(id);
 }
 
 
-void menuComandos(char* buffer){//----------------------------------------------FUNCIONAL
+void cvMenuComandos(char* buffer){//----------------------------------------------FUNCIONAL
 char* param1 = strtok(buffer," ");
 char* param2 = strtok(NULL," ");
 int countParams = 0;
