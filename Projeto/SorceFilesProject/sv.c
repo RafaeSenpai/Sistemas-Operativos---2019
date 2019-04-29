@@ -23,17 +23,22 @@ int main(int argc, char const *argv[])
    mkfifo(myfifo, 0666);
    mkfifo(myfifo2, 0666);
 
+   // array dinamico para saber os clientes
+   int* ptr; 
+
+
+
+
    /* open, read, and display the message from the FIFO */
    client_to_server = open(myfifo, O_RDONLY);
    server_to_client = open(myfifo2, O_WRONLY);
 
    write(1,"Server ON.\n",11);
-
-
-
+   
    while (1)
-   {
-      int n=read(client_to_server,buf,1024); // LER O QUE O CLIENTE ESCREVE
+   {  
+
+      int n=read(client_to_server,buf,2048); // LER O QUE O CLIENTE ESCREVE
       if (strcmp("exit\n",buf)==0)
       {
          write(1,"Server OFF.\n",10);
@@ -41,14 +46,20 @@ int main(int argc, char const *argv[])
       }
 
 
-
       else if (strcmp(" ",buf)!=0)
       {
+
+         //pid_t pid=fork();
+        
+         
          write(1,"Received: \n",10);
          write(1,buf,n);
-
          //write(0,"Sending: %s\n", n);
          write(server_to_client,buf,n);
+         //memset(buf, 0, n);
+
+         //write(server_to_client,getpid(),sizeof(pid_t));
+         
       }
          memset(buf, 0, n);
 
