@@ -61,7 +61,7 @@ Venda newSale = malloc(sizeof(struct Vendas));
 	if(newSale){
 		newSale->idArt = atoi(idArt);
 		newSale->quant = (-1) * atoi(quant);//<---não faz sentido guardar numa venda o valor que foi subtraido ao stock do produto, mas sim a quantidade que foi vendida (valor positivo)
-		newSale->vTotal = (-1) * atof(quant) * (getPreco(idArt));	
+		newSale->vTotal = (-1) * atof(quant) * (getPreco(idArt));
 		return newSale;
 	}else{
 		catchError(ERROR_25);
@@ -92,10 +92,10 @@ int newStock = 0;
 				write(1,msg,strlen(msg));
 				free(msg);
 
-				if(atoi(qt)<0){
+				if(atoi(qt)<0){	
 					Venda sale = criaStructVenda(cod,qt);
 					lseek(fdVendas,sizeof(struct Vendas),SEEK_END);
-					write(fdVendas,sale,sizeof(sale));
+					write(fdVendas,sale,sizeof(struct Vendas));
 					viewVenda(sale);
 					close(fdVendas);
 				}
@@ -115,14 +115,22 @@ int newStock = 0;
 
 Venda getVenda(char* x){
 int fdVendas = open("VENDAS.txt",O_RDONLY);
-Venda sale = malloc(sizeof(struct Vendas));
+Venda sale = NULL;
+
 	if(fdVendas){
+		int nbEnd = lseek(fdVendas,0,SEEK_END); //numero de bytes existentes ate ao final do ficheiro
+		int nbLocal = lseek(fdVendas,atoi(x)*sizeof(struct Vendas),SEEK_SET);	//numero de bytes até á estrutura que se quer ler
+		sale = malloc(sizeof(struct Vendas));
 		if(sale){
-			lseek(fdVendas,atoi(x)*sizeof(struct Vendas),SEEK_SET);
-			read(fdVendas,sale,sizeof(struct Vendas));
-			close(fdVendas);
-			//não posso fazer free snao perco a informação que quero devolver
-			return sale;
+			if(nbLocal<nbEnd){//se o "numero" da venda a procurar não existir retorna NULL
+				lseek(fdVendas,atoi(x)*sizeof(struct Vendas),SEEK_SET);	
+				read(fdVendas,sale,sizeof(struct Vendas));
+				close(fdVendas);
+				//não posso fazer free snao perco a informação que quero devolver
+				return sale;
+			}else{
+				return NULL;
+			}
 		}else{
 			catchError(ERROR_27);
 		}
@@ -135,13 +143,17 @@ return NULL;
 
 void viewVenda(Venda sale){
 char* msg = malloc(150*sizeof(char));
-	
-	if(msg){
-		sprintf(msg,"Venda inserida:\n    ID artigo: %d\n    Quantidade: %.0f\n    Valor Total: %.2f\n\n",sale->idArt,sale->quant,sale->vTotal);
-		write(1,msg,strlen(msg));
-		free(msg);
+	if(sale){
+		if(msg){
+			sprintf(msg,"\nVenda inserida:\n    End. MEMORIA da struct apresentada: %p\n    ID artigo: %d\n    Quantidade: %.0f\n    Valor Total: %.2f\n\n",sale,sale->idArt,sale->quant,sale->vTotal);
+			write(1,msg,strlen(msg));
+			free(msg);
+		}else{
+			catchError(ERROR_28);
+		}
 	}else{
-		catchError(ERROR_28);
+		free(sale);
+		write(1,"Não existe a venda pedida!\n",28);
 	}
 }
 
@@ -231,7 +243,6 @@ char* x = "gv";
 			break;
 		case 3:
 			/*EXTRA - FUnção usada para confirmar se os dados são corretamente guardados*/
-			printf("Valor no parm2: %d\n",param2);
 			viewVenda(getVenda(param2));
 			write(1,"\n\n",2);
 			break;

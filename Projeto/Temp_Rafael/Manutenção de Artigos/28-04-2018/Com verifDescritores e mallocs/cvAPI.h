@@ -31,7 +31,7 @@ void atualizaStock(char* cod, char* qt);
 
 void cvGetStock(char* id);
 
-void getPrice(char* id);
+void getPreco(char* id);
 
 void getStockAndPrice(char* id);
 

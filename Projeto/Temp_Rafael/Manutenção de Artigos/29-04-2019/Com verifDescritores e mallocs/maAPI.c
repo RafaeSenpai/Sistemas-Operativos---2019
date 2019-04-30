@@ -55,6 +55,7 @@ ssize_t nbytes = 0;
 */
 ArtigoFile criaStructArtigo(int nbArt, int nbStr,char* price){//---------------FUNCIONAL
 ArtigoFile new = malloc(sizeof(struct ArtigoF));
+	
 	if(new){
 		new->id = nbArt/sizeof(struct ArtigoF);
 		new->edr_nome = nbStr;
@@ -70,6 +71,7 @@ ArtigoFile new = malloc(sizeof(struct ArtigoF));
 void insereArtigo(char* nome,char* preco){//-----------------------------------FUNCIONAL
 	int fdStr = open("STRINGS.txt", O_CREAT |O_RDWR, 0777);
 	int nbStr;
+	
 	if(fdStr>-1){ 
 		nbStr = lseek(fdStr,0,SEEK_END); 
 		write(fdStr,nome,strlen(nome));
@@ -87,6 +89,7 @@ void insereArtigo(char* nome,char* preco){//-----------------------------------F
 
 		write(fdArt,newArt,sizeof(struct ArtigoF)); 
 		char *id = malloc(sizeof(char) * 30);
+		
 		if(id){
 			sprintf(id,"%d",newArt->id);
 			write(1,id,sizeof(int));//<---provavelmente dará problemas aquando houver IDs com mais que 4 caracteres
@@ -96,12 +99,14 @@ void insereArtigo(char* nome,char* preco){//-----------------------------------F
 		}
 		close(fdArt);
 		free(newArt);
+	
 	}else{
 		catchError(ERROR_2);
 	}
 
 	int quant = 0;
 	int fdStK = open("STOCKS.txt", O_CREAT | O_RDWR | O_APPEND, 0777);
+	
 	if(fdStK>-1){
 		write(fdStK,&quant,sizeof(int));
 		close(fdStK);
@@ -135,15 +140,26 @@ int fdStr = open("STRINGS.txt", O_RDONLY, 0777);
 
 int getStock(int id){
 int fdStK = open("STOCKS.txt", O_RDONLY, 0777);
+	
 	if(fdStK>-1){
-		int stk = 0;
-		lseek(fdStK,id*sizeof(int),SEEK_SET);
-		read(fdStK,&stk,sizeof(int));
-		close(fdStK);
-		return stk;
+		int nbEnd = lseek(fdStK,0,SEEK_END);
+		int nbLocal = lseek(fdStK,id*sizeof(int),SEEK_SET);
+	
+		if(nbLocal<nbEnd){
+			int stk = 0;
+			lseek(fdStK,id*sizeof(int),SEEK_SET);
+			read(fdStK,&stk,sizeof(int));
+			close(fdStK);
+			return stk;
+		}else{
+			write(1,"O ID do artigo do qual quer saber o stock não existe!\n",55);
+			exit(0);
+		}
+	
 	}else{
 		catchError(ERROR_5);
 	}
+
 return 0;
 }
 
@@ -157,48 +173,69 @@ return 0;
 */
 void viewArtigo(Artigo art){
 char* msg = malloc(200*sizeof(char));
-	if(msg){
-		write(1,"-----------------FICHA DE ARTIGO-----------------\n",50);
-		sprintf(msg, "Endereço da estrutura de dados devolvida: %p\nID: %d\nNome: %s\nPreço: %.2f\nStock: %d\n",art,art->id,art->nome,art->preco,art->stock);
-		write(1, msg,strlen(msg));
-		write(1,"-------------------------------------------------\n",50);
-		free(msg);
+	
+	if(art){
+	
+		if(msg){
+			write(1,"-----------------FICHA DE ARTIGO-----------------\n",50);
+			sprintf(msg,"ID: %d\nNome: %s\nPreço: %.2f\nStock: %d\n",art->id,art->nome,art->preco,art->stock);
+			write(1, msg,strlen(msg));
+			write(1,"-------------------------------------------------\n",50);
+			free(msg);
+		}else{
+			catchError(ERROR_20);
+		}
+
 	}else{
-		catchError(ERROR_20);
+		write(1,"Artigo inexistente!\n",21);
 	}
 }
 
 
-Artigo getArtigo(char* id){ //--------------------FUNCIONAL!!!-------APENAS FAZER COM QUE DADO UM ID DE UM ARTIGO ESTE NÃO APRESENTE INFORMAÇÃO NENHUMA
+Artigo getArtigo(char* id){ //--------------------FUNCIONAL!!!-------APENAS FAZER COM QUE DADO UM ID DE UM ARTIGO que nao existe ESTE NÃO APRESENTE INFORMAÇÃO NENHUMA
 int fdArt = open("ARTIGOS.txt", O_RDONLY, 0777);
+	
 	if(fdArt>-1){
-		lseek(fdArt,(atoi(id))*sizeof(struct ArtigoF),SEEK_SET); 
-		ArtigoFile newArtF = malloc(sizeof(struct ArtigoF));
-		if(newArtF){
-			read(fdArt,newArtF,sizeof(struct ArtigoF));
-			Artigo art = malloc(sizeof(struct Artigo));
-			if(art){
-				art->id = newArtF->id;
-				art->nome = getNome(newArtF->edr_nome);
-				art->preco = newArtF->preco;
-				art->stock = getStock(newArtF->id);
-				free(newArtF);
-				close(fdArt);
-				/*
-					Não posso fazer free do malloc (art) desta função porque snão perco a informação que quero 
-					retornar, mas em contra partida quando faço get de uma artigo que nao existe este devolve-me 
-					parte da informação relativa a um artigo existente
-				*/
-				return art;
+		int nbEnd = lseek(fdArt,0,SEEK_END);//numero de bytes existentes ate ao final do ficheiro
+		int nbAtual = lseek(fdArt,(atoi(id))*sizeof(struct ArtigoF),SEEK_SET); //numero de bytes até á estrutura que se quer ler
+		
+		if(nbAtual<nbEnd){
+			ArtigoFile newArtF = malloc(sizeof(struct ArtigoF));
+			
+			if(newArtF){
+				read(fdArt,newArtF,sizeof(struct ArtigoF));
+				Artigo art = malloc(sizeof(struct Artigo));
+				
+				if(art){
+					art->id = newArtF->id;
+					art->nome = getNome(newArtF->edr_nome);
+					art->preco = newArtF->preco;
+					art->stock = getStock(newArtF->id);
+					free(newArtF);
+					close(fdArt);
+					/*
+						Não posso fazer free do malloc (art) desta função porque snão perco a informação que quero 
+						retornar, mas em contra partida quando faço get de uma artigo que nao existe este devolve-me 
+						parte da informação relativa a um artigo existente
+					*/
+					return art;
+				
+				}else{
+					catchError(ERROR_23);
+				}	
+			
 			}else{
-				catchError(ERROR_23);
-			}	
+				catchError(ERROR_21);
+			}
+		
 		}else{
-			catchError(ERROR_21);
+			return NULL;
 		}
+	
 	}else{
 		catchError(ERROR_6);
 	}
+	
 	return NULL;
 }
 
@@ -206,22 +243,35 @@ int fdArt = open("ARTIGOS.txt", O_RDONLY, 0777);
 
 
 void editaNome(char* id, char* nome){ //-------------------------------FUNCIONAL
-int fdART = open("ARTIGOS.txt",O_RDWR);
 int fdSTR = open("STRINGS.txt",O_RDWR);
 
-	if(fdART>-1 && fdSTR>-1){
-		strcat(nome, "\n");
+	if(fdSTR>-1){
+		int fdART = open("ARTIGOS.txt",O_RDWR);
+		
+		if(fdART>-1){
+			int nbEnd = lseek(fdART,0,SEEK_END); //numero de bytes lidos ate ao final do ficheiro Artigos
+			int nbLocal = lseek(fdART,atoi(id)*sizeof(struct ArtigoF),SEEK_SET);//Numero de bytes lidos até á inserção do artigo no ficheiro artigos
+		
+			if(nbLocal<nbEnd){
+				strcat(nome, "\n");
+				int nbSTR = lseek(fdSTR,0,SEEK_END);
+				write(fdSTR, nome,strlen(nome));
+				close(fdSTR);
+				
+				lseek(fdART,atoi(id)*sizeof(struct ArtigoF)+sizeof(int),SEEK_SET);
+				write(fdART, &nbSTR, sizeof(int));
+				close(fdART);
+				
+				write(1,"Artigo alterado!\n",18);
+				viewArtigo(getArtigo(id));
+			}else{
+				write(1,"Não é possivel modificar o nome do artigo com o ID indicado!\n",42);
+			}
 
-		int nbSTR = lseek(fdSTR,0,SEEK_END);
-		write(fdSTR, nome,strlen(nome));
-
-		lseek(fdART,atoi(id)*sizeof(struct ArtigoF)+sizeof(int),SEEK_SET);
-		write(fdART, &nbSTR, sizeof(int));
-		close(fdART);
-		close(fdSTR);
-
-		write(1,"Artigo alterado!\n",18);
-		viewArtigo(getArtigo(id));
+		}else{
+			catchError(ERROR_14);
+		}
+			
 	}else{
 		catchError(ERROR_7);
 	}
@@ -235,10 +285,17 @@ float catchincatchin;
 int fdART = open("ARTIGOS.txt",O_RDWR);
 	
 	if(fdART>-1){
-		lseek(fdART,atoi(id)*sizeof(struct ArtigoF)+sizeof(int)+sizeof(int),SEEK_SET);
-		catchincatchin = atof(makeItRain);
-		write(fdART, &catchincatchin, sizeof(float));
-		close(fdART);
+		int nbEnd = lseek(fdART,0,SEEK_END);
+		int nbLocal = lseek(fdART,atoi(id)*sizeof(struct ArtigoF),SEEK_SET);
+
+		if(nbLocal<nbEnd){
+			lseek(fdART,atoi(id)*sizeof(struct ArtigoF)+sizeof(int)+sizeof(int),SEEK_SET);
+			catchincatchin = atof(makeItRain);
+			write(fdART, &catchincatchin, sizeof(float));
+		}else{
+			write(1,"Não é possivel modificar o preço do artigo com o ID indicado!\n",66);
+			close(fdART);
+		}
 	}else{
 		catchError(ERROR_8);
 	}
