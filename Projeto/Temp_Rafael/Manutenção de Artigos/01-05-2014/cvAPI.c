@@ -129,21 +129,21 @@ int newStock = 0;
 
 					sprintf(zero,"%d",x);
 					write(fdSTK,&x,sizeof(int));
-					close(fdSTK);
+					close(fdSTK);//<--- até aqui trata do stock(tudo correto)
 
 					
 
 					char* strqt = malloc(50*sizeof(char));
-					sprintf(strqt,"%d",qtdAtual);
-					Venda sale = criaStructVenda(cod,strqt);//<<--- VENDO TODO O STOCK EXISTENTE e mult por (-1) porque o 2º param passado á função criaStructVenda já está a multiplicar por (-1) para que as vendas nao apresentem vendas de stocks negativos
-					
-					
+					if(qtdAtual>0){
+						sprintf(strqt,"%d",qtdAtual);
+						Venda sale = criaStructVenda(cod,strqt);//<<--- VENDO TODO O STOCK EXISTENTE e mult por (-1) porque o 2º param passado á função criaStructVenda já está a multiplicar por (-1) para que as vendas nao apresentem vendas de stocks negativos
+						
+						lseek(fdVendas,sizeof(struct Vendas),SEEK_END);
+						write(fdVendas,sale,sizeof(struct Vendas));//<<---- guardo a venda
+						viewVenda(sale);
+					}
 
-					lseek(fdVendas,sizeof(struct Vendas),SEEK_END);
-					write(fdVendas,sale,sizeof(struct Vendas));//<<---- guardo a venda
-					viewVenda(sale);
-					close(fdVendas);
-
+					close(fdVendas);						
 					char* msg = malloc(100*sizeof(char));
 						
 					if(msg){

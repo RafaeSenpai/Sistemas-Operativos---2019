@@ -16,5 +16,5 @@
 */
 void catchMessage(char *msg){
 	write(1, msg,strlen(msg));
-	exit(1); //<----------------------pode vir ater implicações quando usar concorrencia, talvez!
+	//exit(1); //<----------------------pode vir ater implicações quando usar concorrencia, talvez!
 }

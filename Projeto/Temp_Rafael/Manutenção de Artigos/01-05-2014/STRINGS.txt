@@ -1,6 +1,3 @@
 audi
 bmw
 fiat
-Audi
-BMW
-Fiat
