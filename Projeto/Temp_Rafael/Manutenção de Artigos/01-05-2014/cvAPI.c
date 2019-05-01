@@ -187,11 +187,16 @@ Venda sale = NULL;
 		if(sale){
 
 			if(nbLocal<nbEnd){//se o "numero" da venda a procurar não existir retorna NULL
-				lseek(fdVendas,atoi(x)*sizeof(struct Vendas),SEEK_SET);	
-				read(fdVendas,sale,sizeof(struct Vendas));
-				close(fdVendas);
-				//não posso fazer free snao perco a informação que quero devolver
-				return sale;
+				if(atoi(x)>=0){	
+					lseek(fdVendas,atoi(x)*sizeof(struct Vendas),SEEK_SET);	
+					read(fdVendas,sale,sizeof(struct Vendas));
+					close(fdVendas);
+					//não posso fazer free snao perco a informação que quero devolver
+					return sale;
+				}else{
+					close(fdVendas);
+					catchMessage(MSG_1);
+				}
 			}else{
 				close(fdVendas);
 				return NULL;
