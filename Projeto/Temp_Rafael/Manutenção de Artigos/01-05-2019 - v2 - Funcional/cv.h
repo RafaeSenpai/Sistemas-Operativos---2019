@@ -1,5 +1,5 @@
-#ifndef cvAPI_h
-#define cvAPI_h
+#ifndef cV_h
+#define cV_h
 
 #include <string.h> //strlen - strcpy - strtok - strcmp
 #include <unistd.h> //system calls

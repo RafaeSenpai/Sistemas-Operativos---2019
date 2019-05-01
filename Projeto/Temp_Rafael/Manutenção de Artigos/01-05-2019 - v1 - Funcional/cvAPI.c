@@ -3,8 +3,7 @@
 /*
 	Estrutura do artigo no ficheiro artigos
 */
-struct ArtigoF
-{
+struct ArtigoF{
     int id;
     int edr_nome; 
     float preco;
@@ -55,7 +54,7 @@ ssize_t nbytes = 0;
 }
 
 
-Venda criaStructVenda(char* idArt, char* quant){
+Venda criaStructVenda(char* idArt, char* quant){//----------------------------------------FUNCIONAL
 Venda newSale = malloc(sizeof(struct Vendas));
 
 	if(newSale){
@@ -78,7 +77,7 @@ Venda newSale = malloc(sizeof(struct Vendas));
 }
 
 
-void atualizaStock(char* cod, char* qt){
+void atualizaStock(char* cod, char* qt){ //----------------------------------------------FUNCIONAL
 int fdSTK = open("STOCKS.txt",O_RDWR);
 int qtdAtual = 0;
 int newStock = 0;
@@ -98,7 +97,7 @@ int newStock = 0;
 				
 				if(newStock>=0){ //<<<-----------------------Verifica se ao validar a venda se o stock fica negativo! se nao ficar a negativo atualiza o stock e regista a venda
 					lseek(fdSTK,(-1)*sizeof(int),SEEK_CUR);//<----------------------- reposicionamento para o local onde se quer colocar o stock atualizado
-					write(fdSTK,&newStock,sizeof(int));
+					write(fdSTK,&newStock,sizeof(int));//<----como o valor inserido é positivo trata-se apenas de um reforço de stock
 					close(fdSTK);
 					char* msg = malloc(100*sizeof(char));
 
@@ -107,10 +106,10 @@ int newStock = 0;
 						write(1,msg,strlen(msg));
 						free(msg);
 
-						if(atoi(qt)<0){	
-							Venda sale = criaStructVenda(cod,qt);
+						if(atoi(qt)<0){	//<---se o valor inserido for um valor negativo entao trata-se de uma venda desse mesmo numero de unidades
+							Venda sale = criaStructVenda(cod,qt);//<--- é criada uma struct de venda e guardado os dados dessa venda
 							lseek(fdVendas,sizeof(struct Vendas),SEEK_END);
-							write(fdVendas,sale,sizeof(struct Vendas));
+							write(fdVendas,sale,sizeof(struct Vendas));//<--- a estrutura de dados venda com as respetivas informações é guardada no ficheiro VENDAS.txt
 							viewVenda(sale);
 							close(fdVendas);
 						}
@@ -120,23 +119,20 @@ int newStock = 0;
 						catchMessage(ERROR_12);
 					}
 
-				}else{//<<<<-----------------------se ao validar a encomenda o stock ficar a negativo, é vendido todo o stock existente, criada a venda e zerado o stock do artigo
-					lseek(fdSTK,(-1)*sizeof(int),SEEK_CUR);//<-----------------------(ATUALIZAÇÃO DO STOCK) reposicionamento para o local onde se quer colocar o stock atualizado
-					
-
+				}else{//<<<<-----------------------se ao validar a encomenda o stock ficar a negativo, É VENDIDO TODO O STOCK EXISTENTE, criada a venda e zerado o stock do artigo
 					int x = 0;
 					char* zero = malloc(2*sizeof(char));
-
+					lseek(fdSTK,(-1)*sizeof(int),SEEK_CUR);//<-----------------------reposicionamento para o local onde se quer colocar o stock atualizado(0-zero)
 					sprintf(zero,"%d",x);
-					write(fdSTK,&x,sizeof(int));
+					write(fdSTK,&x,sizeof(int));//<<----------------------colocando o stock do artigo a zero!
 					close(fdSTK);//<--- até aqui trata do stock(tudo correto)
 
 					
 
 					char* strqt = malloc(50*sizeof(char));
-					if(qtdAtual>0){
+					if(qtdAtual>0){//<<---------------------------------------caso o stock atual do artigo seja maior que zero então é guardada a venda (stock existente seja diferente de zero, mais concretamente)
 						sprintf(strqt,"%d",qtdAtual);
-						Venda sale = criaStructVenda(cod,strqt);//<<--- VENDO TODO O STOCK EXISTENTE e mult por (-1) porque o 2º param passado á função criaStructVenda já está a multiplicar por (-1) para que as vendas nao apresentem vendas de stocks negativos
+						Venda sale = criaStructVenda(cod,strqt);//<<--- VENDO TODO O STOCK EXISTENTE
 						
 						lseek(fdVendas,sizeof(struct Vendas),SEEK_END);
 						write(fdVendas,sale,sizeof(struct Vendas));//<<---- guardo a venda
@@ -163,7 +159,6 @@ int newStock = 0;
 		}else{
 			close(fdSTK);
 			catchMessage(MSG_2);
-			//exit(0);// <-------------------------------------------------------------------------------------pode vir a gerar problemas aqui por causa do exit(0)
 		}
 
 	}else{
@@ -175,7 +170,7 @@ int newStock = 0;
 
 
 
-Venda getVenda(char* x){
+Venda getVenda(char* x){//--------------------------------------------------------FUNCIONAL
 int fdVendas = open("VENDAS.txt",O_RDONLY);
 Venda sale = NULL;
 
@@ -215,7 +210,7 @@ return NULL;
 }
 
 
-void viewVenda(Venda sale){
+void viewVenda(Venda sale){//------------------------------------------------------FUNCIONAL
 char* msg = malloc(150*sizeof(char));
 
 	if(sale){
@@ -274,7 +269,7 @@ int stk;
 	seu prototipo encontra-se na API pois pode ter utilidade para o developer para 
 	debug se necessário.
 */
-float getPreco(char* id){
+float getPreco(char* id){//------------------------------------------------------FUNCIONAL
 int fdART = open("ARTIGOS.txt",O_RDWR);
 float catchincatchin;
 

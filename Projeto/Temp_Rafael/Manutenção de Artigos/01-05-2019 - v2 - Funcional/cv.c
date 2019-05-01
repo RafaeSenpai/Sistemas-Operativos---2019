@@ -1,4 +1,4 @@
-#include "cvAPI.h"
+#include "cv.h"
 
 /*
 	Estrutura do artigo no ficheiro artigos
@@ -304,21 +304,25 @@ void getStockAndPrice(char* id){ //---------------------------------------------
 char* msg = malloc(100 * sizeof(char));
 int fdART = open("ARTIGOS.txt",O_RDWR);
 
-	if(fdART){
-		int nbLocal = lseek(fdART,atoi(id)*sizeof(struct ArtigoF),SEEK_SET);
-		int nbEnd = lseek(fdART,0,SEEK_END);
-		
-		if(nbLocal<nbEnd){
-			sprintf(msg,"Stock: %d\nPreço: %.2f\n\n",cvGetStock(id),getPreco(id));
-			write(1,msg,strlen(msg));
-			close(fdART);
-		}else{
-			close(fdART);
-			catchMessage(MSG_1);
-		}
+	if(atoi(id)>=0){		
+		if(fdART){
+			int nbLocal = lseek(fdART,atoi(id)*sizeof(struct ArtigoF),SEEK_SET);
+			int nbEnd = lseek(fdART,0,SEEK_END);
+			
+			if(nbLocal<nbEnd){
+				sprintf(msg,"Stock: %d\nPreço: %.2f\n\n",cvGetStock(id),getPreco(id));
+				write(1,msg,strlen(msg));
+				close(fdART);
+			}else{
+				close(fdART);
+				catchMessage(MSG_1);
+			}
 
+		}else{
+			catchMessage(ERROR_11);
+		}
 	}else{
-		catchMessage(ERROR_11);
+		catchMessage(MSG_1);
 	}
 }
 

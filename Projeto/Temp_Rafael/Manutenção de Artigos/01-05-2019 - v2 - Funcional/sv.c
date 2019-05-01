@@ -1,4 +1,4 @@
-#include "cvAPI.h"
+#include "cv.h"
 
 int main(){
 char buffer[1024];
