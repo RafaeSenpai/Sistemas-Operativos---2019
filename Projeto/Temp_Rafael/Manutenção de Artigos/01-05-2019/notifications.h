@@ -1,5 +1,5 @@
-#ifndef apiNOTIFICATIONS_h
-#define apiNOTIFICATIONS_h
+#ifndef nOTIFICATIONS_h
+#define nOTIFICATIONS_h
 
 #define ERROR_1 "Erro de descritor de ficheiro na função ma -> inserArtigo(...)!\nAo abrir o ficheiro STRINGS.txt\n\n"
 #define ERROR_2 "Erro de descritor de ficheiro na função ma -> inserArtigo(...)!\nAo abrir o ficheiro ARTIGOS.txt\n\n"
@@ -32,6 +32,13 @@
 
 #define MSG_1 "O ID do artigo inserido não existe!\n"
 #define MSG_2 "O ID do artigo do qual quer fazer alteração do stock não existe!\n"
+#define MSG_3 "Não existe a venda pedida!\n"
+#define MSG_4 "Opção inválida!\nInsira novo comando:\n"
+#define MSG_5 "STOCK: O ID do artigo inserido não existe!\n"
+#define MSG_6 "PRECO: O ID do artigo inserido não existe!\n"
+#define MSG_7 "Artigo alterado com sucesso!\n"
+#define MSG_8 "NOME: O ID do artigo inserido não existe!\n"
+#define MSG_9 "Deixou de ter stock deste artigo!\n"
 
 #include <unistd.h> //system calls
 #include <string.h> //strlen - strcpy - strtok
@@ -43,6 +50,6 @@
 	Responsavel por encaminhar as mensagens de erro para as devidas funções.
 	Foi criado a pensar em facilitar a deteção de algum erro durante os testes com varios clientes em simultaneo
 */
-void catchError(char *msg);
+void catchMessage(char *msg);
 
 #endif
