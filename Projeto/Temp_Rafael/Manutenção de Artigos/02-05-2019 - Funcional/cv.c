@@ -1,4 +1,6 @@
 #include "cv.h"
+#include "ag.h"
+
 
 /*
 	Estrutura do artigo no ficheiro artigos
@@ -332,17 +334,22 @@ char* param1 = strtok(buffer," ");
 char* param2 = strtok(NULL," ");
 int countParams = 0;
 char* x = "gv";
+char* ag = "ag";
 	
 	while(countParams==0){	
 
-		if(strcmp(param1,x)==0){
+		if(strcmp(param1,x) == 0){
+			countParams = 4;
+		}else if(strcmp(param1,ag) == 0){
 			countParams = 3;
 		}else{
+
 			if(param1 && param2){
 				countParams = 2;
 			}else if(param1 || param2){
 				countParams = 1;				
 			}
+
 		}
 	}
 
@@ -358,6 +365,9 @@ char* x = "gv";
 			write(1,"\n\n",2);
 			break;
 		case 3:
+			geraAgregacao();
+			break;
+		case 4:
 			/*EXTRA - FUnção usada para confirmar se os dados são corretamente guardados*/
 			viewVenda(getVenda(param2));
 			write(1,"\n\n",2);
