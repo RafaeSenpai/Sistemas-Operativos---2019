@@ -1,0 +1,5 @@
+gcc -Wall ma.c maAPI.c notifications.c -o ma
+
+
+gcc -Wall ag.c sv.c cv.c notifications.c -o sv
+
