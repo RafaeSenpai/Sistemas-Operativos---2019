@@ -4,7 +4,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <stdio.h>
-#import <math.h>
+#include <math.h>
 
 int main(){
 

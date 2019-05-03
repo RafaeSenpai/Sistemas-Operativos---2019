@@ -1,11 +1,4 @@
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <string.h>
-#include <sys/types.h>
+#include "API.h"
 
 int main(int argc, char const *argv[]){
 
@@ -28,9 +21,9 @@ int main(int argc, char const *argv[]){
             while((n=read(0,str,sizeof(str)))>0){
             			  sprintf(str1,"%d",getppid());
                     write(1,"----------\n",11);
-                    strcat(str1," ");
-                    strcat(str1,str);
-                    strcpy(str,str1);
+                    //strcat(str1," ");
+                    //strcat(str1,str);
+                    //strcpy(str,str1);
                     write(1,"cmd message to serwer: \n",25);
 		                printf("%s",str);
 		                write(client_to_server, str, strlen(str)); // por causa do espaço adicionamos mais
@@ -42,7 +35,7 @@ int main(int argc, char const *argv[]){
 		                memset(str, 0, sizeof(str));
             	}
 	}
-      close(client_to_server);
-      close(server_to_client);
- 	  return 0;
+  close(client_to_server);
+  close(server_to_client);
+  return 0;
 }

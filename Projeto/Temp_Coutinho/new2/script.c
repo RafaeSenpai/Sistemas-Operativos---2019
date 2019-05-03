@@ -4,12 +4,12 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <stdio.h>
-#import <math.h>
+#include <math.h>
 
 int main(){
 
   int i;
-  int fd = open("ARTIGOS.txt", O_RDWR | O_CREAT, 0777);
+  int fd = open("script_i.txt", O_RDWR | O_CREAT, 0777);
   float x;
 
   char* insercao = NULL;
