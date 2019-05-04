@@ -42,7 +42,7 @@ int stk;
 
 
 
-
+/*
 int main(int argc, char const *argv[])
 {
    int client_to_server;
@@ -54,7 +54,8 @@ int main(int argc, char const *argv[])
    char buf[1024] = "";
    char str[1024];
 
-   /* create the FIFO (named pipe) */
+   int status;
+   /* create the FIFO (named pipe) 
    mkfifo(myfifo, 0666);
    mkfifo(myfifo2, 0666);
 
@@ -62,25 +63,156 @@ int main(int argc, char const *argv[])
   pipe(pd);
   
   // if failed
-  if (cptr == NULL) {
-    printf("Failed to allocate memory space. Terminating program...");
-    return -1;
-  }
+  
+   /* open, read, and display the message from the FIFO 
+   client_to_server = open(myfifo, O_RDONLY);
+   server_to_client = open(strfinal, O_WRONLY);
+
+   
+
+   write(1,"Server ON.\n",11);
+    write(1,"Server ON.\n",11);
+   while (1)
+
+   {  
+         int n=read(client_to_server,buf,2048);
+         printf("kjsnanjsanjsan");
 
 
+      if(fork()==0){
+         int n=read(client_to_server,buf,2048);
+         printf("kjsnanjsanjsan");
+
+          // LER O QUE O CLIENTE ESCREVE
+         if (strcmp("exit\n",buf)==0){
+         write(1,"Server OFF.\n",10);
+         break;
+         }
+
+         else if (strcmp(" ",buf)!=0)
+         {
+            char* str = malloc(100*sizeof(char));
+            char* str1 = malloc(100*sizeof(char));
+            char* strfinal = malloc(200*sizeof(char));
+            
+
+         char *myfifo2 = "/tmp/server_to_client_fifo";
+        // strcat(strfinal,myfifo2);
+         printf("kjsnanjsanjsan");
+         str1=strtok(str," ");
+         strcat(strfinal,str1);
+      
+         printf("%s\n",strfinal);
+         server_to_client = open(strfinal, O_WRONLY);
 
 
+         //pid_t pid=fork();
+         char s[2]=" ";
+         
+         write(1,"Received: \n",10);
+         write(1,buf,n);
+         printf(".------------------------\n");
+         write(server_to_client, "vai te foder", 13); // por causa do espaço adicionamos mais 1 
+
+
+         //write(0,"Sending: %s\n", n);
+         //write(server_to_client,buf,n);
+         //memset(buf, 0, n);
+         //cvGetStock(strtok(buf,s),str);
+         //write(server_to_client,buf,n);   
+         //write(server_to_client,getpid(),sizeof(pid_t)); 
+         //strcat(myfifo2,strtok(buf," "));
+         strtok(buf," ");
+         printf("%s\n",buf);
+         //printf("%c\n",myfifo2);
+         //mkfifo(myfifo2, 0666);
+            //write(1,myfifo2,strlen(myfifo2));
+           
+
+            //close(pd1[1]);// o pai nao escreve,
+            //close(pd2[0]);
+            //funcao que se através do switch
+            // resultado
+
+            //write(pd2[1],, ); //filho escreve para o pai 
+
+            //close(pd1[0]);// o pai nao escreve,
+            //close(pd2[1]);
+
+            //server_to_client = open(myfifo2, O_WRONLY);
+            //write(server_to_client,buf,n);
+
+         }
+      }
+
+         else{
+
+            
+               wait(&status);
+
+         }
+
+         
+         
+      
+         //memset(buf, 0, n);
+
+       //clean buf from any data
+      //memset(buf, 0, sizeof(buf-1));
+   }
+
+
+   close(client_to_server);
+   //close(server_to_client);
+
+   unlink(myfifo);
+  // unlink(myfifo2);
+   return 0;
+
+}
+*/
+
+int main(int argc, char const *argv[])
+{
+   int client_to_server;
+   char *myfifo = "/tmp/client_to_server_fifo";
+
+   int server_to_client;
+   char *myfifo2 = "/tmp/server_to_client_fifo";
+
+   char buf[1024] = "";
+   char str[1024];
+   char buf1[1024] = "";
+
+   int status;
+
+   /* create the FIFO (named pipe) */
+   mkfifo(myfifo, 0666);
+   //mkfifo(myfifo2, 0666);
 
    /* open, read, and display the message from the FIFO */
    client_to_server = open(myfifo, O_RDONLY);
-   server_to_client = open(myfifo2, O_WRONLY);
+   //server_to_client = open(myfifo2, O_WRONLY);
+
 
    write(1,"Server ON.\n",11);
-   
-   while (1)
-   {  
 
-      int n=read(client_to_server,buf,2048); // LER O QUE O CLIENTE ESCREVE
+
+
+   while (1)
+   {
+      //printf("kjsnanjsanjsan");
+
+         int n=read(client_to_server,buf,1024); // LER O QUE O CLIENTE ESCREVE
+         strcpy(buf1,buf);
+         char* myfifo_final = malloc(200*sizeof(char));
+         strtok(buf1, " ");
+         strcat(myfifo_final,myfifo2);
+         strcat(myfifo_final,buf1);
+         printf("%s\n",buf1);
+         printf("-----------\n");
+
+     // int n=read(client_to_server,buf,1024); // LER O QUE O CLIENTE ESCREVE
       if (strcmp("exit\n",buf)==0)
       {
          write(1,"Server OFF.\n",10);
@@ -88,43 +220,26 @@ int main(int argc, char const *argv[])
       }
 
 
+
       else if (strcmp(" ",buf)!=0)
       {
-
-         //pid_t pid=fork();
-        char s[2]=" ";
-         
-         write(1,"Received: \n",10);
-         write(1,buf,n);
-         //write(0,"Sending: %s\n", n);
-         write(server_to_client,buf,n);
-         memset(buf, 0, n);
-         //cvGetStock(strtok(buf,s),str);
-         //write(server_to_client,buf,n);   
-         //write(server_to_client,getpid(),sizeof(pid_t)); 
          if(fork()==0){
-            close(pd1[1]);// o pai nao escreve,
-            close(pd2[0]);
-            //funcao que se através do switch
-            // resultado
-
-            write(pd2[1],, ); //filho escreve para o pai 
-
-            close(pd1[0]);// o pai nao escreve,
-            close(pd2[1]);
-         }
-
+                  //printf("kjsnanjsanjsan");
+                  mkfifo(myfifo_final, 0666);
+                  server_to_client = open(myfifo_final, O_WRONLY);
+                  printf("%s\n",myfifo_final);
+                  write(1,"Received: ",11);
+                  write(1,buf,n);
+                  //write(0,"Sending: %s\n", n);
+                  write(server_to_client,buf,n);
+                  perror("Write:");
+                  memset(buf, 0, n);
+               }
          else{
-
-            
-
-
+              wait(&status);
          }
-
-         
-         
       }
-         memset(buf, 0, n);
+         //memset(buf, 0, n);
 
        //clean buf from any data
       //memset(buf, 0, sizeof(buf-1));
