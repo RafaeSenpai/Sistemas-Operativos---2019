@@ -205,10 +205,13 @@ int main(int argc, char const *argv[])
 
          int n=read(client_to_server,buf,1024); // LER O QUE O CLIENTE ESCREVE
          strcpy(buf1,buf);
+         printf("%s\n",buf);
          char* myfifo_final = malloc(200*sizeof(char));
          strtok(buf1, " ");
          strcat(myfifo_final,myfifo2);
          strcat(myfifo_final,buf1);
+         printf("%s",buf);
+         printf("-----------\n");
          printf("%s\n",buf1);
          printf("-----------\n");
 
@@ -223,31 +226,42 @@ int main(int argc, char const *argv[])
 
       else if (strcmp(" ",buf)!=0)
       {
-         if(fork()==0){
+         //if(fork()==0){
                   //printf("kjsnanjsanjsan");
+      	                  //memset(buf, 0, n);
+
                   mkfifo(myfifo_final, 0666);
                   server_to_client = open(myfifo_final, O_WRONLY);
                   printf("%s\n",myfifo_final);
+                  printf("%s",buf );
+                  printf("---------------\n");
                   write(1,"Received: ",11);
-                  write(1,buf,n);
+                  write(1,buf,2*n);
                   //write(0,"Sending: %s\n", n);
                   write(server_to_client,buf,n);
                   perror("Write:");
-                  memset(buf, 0, n);
+                  
+                  
+                  
+                  
+
                }
-         else{
-              wait(&status);
-         }
+         //else{
+          //    wait(&status);
+         //}
+
+               memset(buf, 0, n);
+               close(server_to_client);
       }
          //memset(buf, 0, n);
 
        //clean buf from any data
       //memset(buf, 0, sizeof(buf-1));
-   }
+   
 
 
    close(client_to_server);
-   close(server_to_client);
+   //close(server_to_client);
 
    unlink(myfifo);
    unlink(myfifo2);
