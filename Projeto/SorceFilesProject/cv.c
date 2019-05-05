@@ -60,7 +60,7 @@ int main(int argc, char const *argv[])
             //printf("%s\n",myfifo_final);
             while((n=read(0,str,sizeof(str)))>0){
               sprintf(str1,"%d",getppid());
-              strcat(myfifo_final,myfifo2);
+              strcpy(myfifo_final,myfifo2);
               strcat(myfifo_final,str1);
               printf("%s\n",myfifo_final);
                 //n=0;
@@ -80,7 +80,6 @@ int main(int argc, char const *argv[])
                 //printf("%s\n",myfifo2); //Very crude error check
                 server_to_client = open(myfifo_final, O_RDONLY); // LER O QUE O SERVER MANDA.REPARA QUE UM LÊ E OUTRO ESCREVE(NOS 2 FICHEIROS E SÃO ALTERNADOS)
                 printf("%s\n",myfifo_final);
-
                 read(server_to_client,str,2048);
                 perror("Read:"); // Very crude error check
                 write(1,"----------\n",11);
@@ -89,7 +88,7 @@ int main(int argc, char const *argv[])
                 free(str1);
                 free(myfifo_final);   
 
-                //close(server_to_client);    
+                close(server_to_client);    
 
        /* remove the FIFO */
      }
@@ -97,7 +96,7 @@ int main(int argc, char const *argv[])
       
   }
       close(client_to_server);
-      close(server_to_client);
+      //close(server_to_client);
     return 0;
 }
 

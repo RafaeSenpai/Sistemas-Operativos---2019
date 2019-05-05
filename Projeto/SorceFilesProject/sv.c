@@ -241,19 +241,17 @@ int main(int argc, char const *argv[])
                   write(server_to_client,buf,n);
                   perror("Write:");
                   
-                  
+                  close(server_to_client);
                   
                   
 
                }
          //else{
           //    wait(&status);
-         //}
-
                memset(buf, 0, n);
-               close(server_to_client);
+         //}
       }
-         //memset(buf, 0, n);
+         
 
        //clean buf from any data
       //memset(buf, 0, sizeof(buf-1));
