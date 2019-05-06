@@ -1,5 +1,4 @@
 #include "cv.h"
-#include "ag.h"
 
 
 /*
@@ -81,7 +80,7 @@ Venda newSale = malloc(sizeof(struct Vendas));
 
 
 void atualizaStock(char* cod, char* qt){
-int fdSTK = open(StockFile,O_RDWR);
+int fdSTK = open("STOCKS.txt",O_RDWR);
 int qtdAtual = 0;
 int newStock = 0;
 
@@ -91,7 +90,7 @@ int newStock = 0;
 		int nbEnd = lseek(fdSTK,0,SEEK_END);
 		
 		if(nbLocal<nbEnd){
-			int fdVendas = open(SaleFile,O_CREAT | O_RDWR | O_APPEND,0777);
+			int fdVendas = open("VENDAS.txt",O_CREAT | O_RDWR | O_APPEND,0777);
 			
 			if(fdVendas>-1){
 				lseek(fdSTK, atoi(cod)*sizeof(int),SEEK_SET);
@@ -178,7 +177,7 @@ int newStock = 0;
 
 
 Venda getVenda(char* x){
-int fdVendas = open(SaleFile,O_RDONLY);
+int fdVendas = open("VENDAS.txt",O_RDONLY);
 Venda sale = NULL;
 
 	if(fdVendas){
@@ -244,7 +243,7 @@ char* msg = malloc(150*sizeof(char));
 	debug se necessário.
 */
 int cvGetStock(char* id){ //-------------------------------------------------------FUNCIONAL
-int fdStK = open(StockFile, O_RDONLY);
+int fdStK = open("STOCKS.txt", O_RDONLY);
 int stk;
 
 	if(fdStK){
@@ -277,7 +276,7 @@ int stk;
 	debug se necessário.
 */
 float getPreco(char* id){
-int fdART = open(ArtgsFile,O_RDWR);
+int fdART = open("ARTIGOS.txt",O_RDWR);
 float catchincatchin;
 
 	if(fdART){
@@ -304,7 +303,7 @@ float catchincatchin;
 
 void getStockAndPrice(char* id){ //---------------------------------------------FUNCIONAL
 char* msg = malloc(100 * sizeof(char));
-int fdART = open(ArtgsFile,O_RDWR);
+int fdART = open("ARTIGOS.txt",O_RDWR);
 
 	if(atoi(id)>=0){		
 		if(fdART){
@@ -377,4 +376,18 @@ char* ag = "ag";
 			catchMessage(MSG_4);
 	}
 
+}
+
+
+int main(){
+char buffer[1024];
+
+	/*
+		Instrucao readln fica com o conteudo da linha lida do terminal até encontrar um \n
+	*/
+	while(cvReadln(0,buffer,1024)){
+		cvMenuComandos(buffer);
+	}
+
+return 0;
 }
