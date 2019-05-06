@@ -86,7 +86,9 @@ int main(int argc, char const *argv[])
                 write(1,str,strlen(str));  
                 memset(str, 0, strlen(str));
                 free(str1);
-                free(myfifo_final);   
+                free(myfifo_final); 
+                char* str1 = malloc(100*sizeof(char));
+                char* myfifo_final = malloc(200*sizeof(char));  
 
                 close(server_to_client);    
 
@@ -99,6 +101,7 @@ int main(int argc, char const *argv[])
       //close(server_to_client);
     return 0;
 }
+
 
 
 
