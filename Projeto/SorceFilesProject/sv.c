@@ -203,6 +203,7 @@ int main(int argc, char const *argv[])
    {
       //printf("kjsnanjsanjsan");
 
+
          int n=read(client_to_server,buf,1024); // LER O QUE O CLIENTE ESCREVE
          strcpy(buf1,buf);
          printf("%s\n",buf);
@@ -230,6 +231,8 @@ int main(int argc, char const *argv[])
                   //printf("kjsnanjsanjsan");
       	                  //memset(buf, 0, n);
 
+      			if(fork()==0){
+
                   mkfifo(myfifo_final, 0666);
                   server_to_client = open(myfifo_final, O_WRONLY);
                   printf("%s\n",myfifo_final);
@@ -239,11 +242,17 @@ int main(int argc, char const *argv[])
                   write(1,buf,2*n);
                   //write(0,"Sending: %s\n", n);
                   write(server_to_client,buf,n);
-                  perror("Write:");
-                  
+                  perror("Write:");   
                   close(server_to_client);
                   
-                  
+               }
+               else
+               		{
+            		 wait(&status);
+            		 //close(server_to_client);
+
+            		}
+            
 
                }
          //else{
