@@ -1,5 +1,10 @@
 #include "API.h"
 
+#define ArtgsFile "artigos"
+#define SaleFile "vendas"
+#define StockFile "stocks"
+#define StringFile "strings"
+
 struct ArtigoF
 {
   int id;
@@ -82,7 +87,7 @@ Venda newSale = malloc(sizeof(struct Vendas));
 }
 
 void insereArtigo(char* nome,char* preco){//-----------------------------------FUNCIONAL
-	int fdStr = open("STRINGS.txt", O_CREAT |O_RDWR, 0777);
+	int fdStr = open("STRINGS.txt", O_CREAT | O_RDWR, 0777);
 	int nbStr;
 
 	if(fdStr>-1){
@@ -101,11 +106,13 @@ void insereArtigo(char* nome,char* preco){//-----------------------------------F
 		ArtigoFile newArt = criaStructArtigo(nbArt,nbStr,preco);
 
 		write(fdArt,newArt,sizeof(struct ArtigoF));
+    char* msg = malloc(100*sizeof(char));
+    sprintf(msg, "ARTIGO INSERIDO: %d\n", newArt->id);
+    write(1,msg,strlen(msg));
 		char *id = malloc(sizeof(char) * 30);
 
 		if(id){
 			sprintf(id,"%d",newArt->id);
-			write(1,id,sizeof(int));//<---provavelmente dará problemas aquando houver IDs com mais que 4 caracteres
 			free(id);
 		}else{
 			catchError(ERROR_18);
@@ -129,12 +136,12 @@ void insereArtigo(char* nome,char* preco){//-----------------------------------F
 }
 
 void atualizaStock(char* cod, char* qt){
-int fdSTK = open("STOCKS.txt", O_RDWR | O_CREAT, 0777);
-printf("fdSTK: %d\n", fdSTK);
-int fdVendas = open("VENDAS.txt",O_CREAT | O_RDWR | O_APPEND,0777);
-char* msg = malloc(100*sizeof(char));
-int qtdAtual = 0;
-int newStock = 0;
+  int fdSTK = open("STOCKS.txt", O_RDWR | O_CREAT, 0777);
+  printf("fdSTK: %d\n", fdSTK);
+  int fdVendas = open("VENDAS.txt",O_CREAT | O_RDWR | O_APPEND,0777);
+  char* msg = malloc(100*sizeof(char));
+  int qtdAtual = 0;
+  int newStock = 0;
 
 	if(fdSTK>-1){
 		if(fdVendas>-1){
@@ -143,7 +150,6 @@ int newStock = 0;
 			newStock = qtdAtual + (atoi(qt));
 			lseek(fdSTK,(-1)*sizeof(int),SEEK_CUR);//<--- reposicionamento para o local onde se quer colocar o stock atualizado
 			write(fdSTK,&newStock,sizeof(int));
-			close(fdSTK);
 
 			if(msg){
 				sprintf(msg,"Novo stock: %d\n",newStock);
@@ -155,17 +161,25 @@ int newStock = 0;
 					lseek(fdVendas,sizeof(struct Vendas),SEEK_END);
 					write(fdVendas,sale,sizeof(struct Vendas));
 					viewVenda(sale);
-					close(fdVendas);
 				}
-			}else{
+        close(fdVendas);
+        close(fdSTK);
+			}
+      else{
 				catchError(ERROR_12);
 			}
-		}else{
+      close(fdVendas);
+      close(fdSTK);
+		}
+    else{
 			catchError(ERROR_24);
 		}
-	}else{
+	}
+  else{
 		catchError(ERROR_9);
 	}
+  close(fdVendas);
+  close(fdSTK);
 }
 
 void editaNome(char* id, char* nome){ //-------------------------------FUNCIONAL
@@ -188,8 +202,7 @@ int fdSTR = open("STRINGS.txt",O_RDWR);
 				write(fdART, &nbSTR, sizeof(int));
 				close(fdART);
 
-				write(1,"Artigo alterado!\n",18);
-				viewArtigo(getArtigo(id));
+        write(1,"NOME EDITADO\n",strlen("NOME EDITADO\n"));
 			}else{
 				write(1,"Não é possivel modificar o nome do artigo com o ID indicado!\n",42);
 			}
@@ -203,18 +216,24 @@ int fdSTR = open("STRINGS.txt",O_RDWR);
 	}
 }
 
-void editaPreco(char* id, char* makeItRain){//--------------------------FUNCIONAL
-float catchincatchin;
-int fdART = open("ARTIGOS.txt",O_RDWR);
+void editaPreco(char* idC, char* precoC){//--------------------------FUNCIONAL
+
+  float preco;
+  int id = atoi(idC);
+  int fdART = open("ARTIGOS.txt", O_RDONLY | O_WRONLY | O_CREAT);
+
+  printf("here\n%d\nhere\n", fdART);
 
 	if(fdART>-1){
 		int nbEnd = lseek(fdART,0,SEEK_END);
-		int nbLocal = lseek(fdART,atoi(id)*sizeof(struct ArtigoF),SEEK_SET);
+		int nbLocal = lseek(fdART,id*sizeof(struct ArtigoF),SEEK_SET);
 
 		if(nbLocal<nbEnd){
-			lseek(fdART,atoi(id)*sizeof(struct ArtigoF)+sizeof(int)+sizeof(int),SEEK_SET);
-			catchincatchin = atof(makeItRain);
-			write(fdART, &catchincatchin, sizeof(float));
+			lseek(fdART,id*sizeof(struct ArtigoF)+sizeof(int)+sizeof(int),SEEK_SET);
+			preco = atof(precoC);
+			write(fdART, &preco, sizeof(float));
+      write(1,"PREÇO EDITADO\n",strlen("PREÇO EDITADO\n"));
+      close(fdART);
 		}else{
 			write(1,"Não é possivel modificar o preço do artigo com o ID indicado!\n",66);
 			close(fdART);
@@ -222,6 +241,7 @@ int fdART = open("ARTIGOS.txt",O_RDWR);
 	}else{
 		catchError(ERROR_8);
 	}
+
 }
 
 Venda getVenda(char* x){
@@ -380,34 +400,9 @@ void getStockAndPrice(char* id){ //---------------------------------------------
 	sprintf(msg,"Stock: %d\nPreço: %.2f\n\n", getStockC(id), getPreco(id));
 	write(1,msg,strlen(msg));
 }
-/*
-void getStockAndPrice(char* id){ //---------------------------------------------FUNCIONAL
-char* msg = malloc(100 * sizeof(char));
-int fdART = open("ARTIGOS.txt",O_RDWR);
 
-	if(atoi(id)>=0){
-		if(fdART){
-			int nbLocal = lseek(fdART,atoi(id)*sizeof(struct ArtigoF),SEEK_SET);
-			int nbEnd = lseek(fdART,0,SEEK_END);
-
-			if(nbLocal<nbEnd){
-				sprintf(msg,"Stock: %d\nPreço: %.2f\n\n",getStockC(id),getPreco(id));
-				write(1,msg,strlen(msg));
-				close(fdART);
-			}else{
-				close(fdART);
-				catchError(MSG_1);
-			}
-		}else{
-			catchError(ERROR_11);
-		}
-	}else{
-		catchError(MSG_1);
-	}
-}
-*/
 void viewVenda(Venda sale){
-char* msg = malloc(150*sizeof(char));
+  char* msg = malloc(150*sizeof(char));
 	if(sale){
 		if(msg){
 			sprintf(msg,"\nVenda inserida:\n    End. MEMORIA da struct apresentada: %p\n    ID artigo: %d\n    Quantidade: %.0f\n    Valor Total: %.2f\n\n",sale,sale->idArt,sale->quant,sale->vTotal);
@@ -423,7 +418,7 @@ char* msg = malloc(150*sizeof(char));
 }
 
 void viewArtigo(Artigo art){
-char* msg = malloc(200*sizeof(char));
+  char* msg = malloc(200*sizeof(char));
 
 	if(art){
 
@@ -439,6 +434,159 @@ char* msg = malloc(200*sizeof(char));
 
 	}else{
 		write(1,"Artigo inexistente!\n",21);
+	}
+}
+
+int getNumVendas(int fd){
+  int totBytes = lseek(fd,0,SEEK_END);//Numero de bytes lidos até á inserção do artigo no ficheiro artigos
+
+	return totBytes/(sizeof(struct Vendas));
+}
+
+char* nameFileAgregation(){
+  time_t data;
+  data = time(NULL);
+  char* nametoAgregationFile = malloc(50*sizeof(char));
+  int x;
+
+	if(nametoAgregationFile){
+
+	    strcat(nametoAgregationFile,ctime(&data));
+	    x = strlen(nametoAgregationFile) - 1;
+	    nametoAgregationFile[x]='\0';
+	    return nametoAgregationFile;
+
+	}else{
+
+		catchError(ERROR_31);
+		return NULL;
+	}
+}
+
+Venda agCriaStructVenda(int idArtigo, float qtdTotalVendas, float totalVendas){
+  Venda new = malloc(sizeof(struct Vendas));
+
+	if(new){
+		new->idArt = idArtigo;
+		new->quant = qtdTotalVendas;
+		new->vTotal = totalVendas;
+		return new;
+	} else{
+		catchError(ERROR_29);
+		return NULL;
+	}
+}
+
+Venda saleToAgregation(int idArt, int numVendas){
+  int fdVendas = open(SaleFile,O_RDONLY,0777);
+  float quantidade;
+  float somaTodasQuantidades=0;
+  float totalVenda;
+  float somaTodosTotaisV=0;
+  int id;
+
+	if(fdVendas){
+		for(int i=0; i<numVendas; i++){
+			lseek(fdVendas, i*sizeof(struct Vendas), SEEK_SET);
+			read(fdVendas, &id, sizeof(int));
+
+			if(id==idArt){
+				lseek(fdVendas, (i*sizeof(struct Vendas)) + sizeof(int), SEEK_SET);
+				read(fdVendas, &quantidade, sizeof(float));
+				somaTodasQuantidades += quantidade;
+
+				lseek(fdVendas, (i*sizeof(struct Vendas)) + sizeof(int) + sizeof(float), SEEK_SET);
+				read(fdVendas, &totalVenda, sizeof(float));
+				somaTodosTotaisV += totalVenda;
+			}
+		}
+		close(fdVendas);
+		return agCriaStructVenda(idArt,somaTodasQuantidades,somaTodosTotaisV);
+	}else{
+		catchError(ERROR_30);
+		return NULL;
+	}
+
+}
+
+int existArtInAggregation(int fd, int id, int numArtig){
+int currentID;
+
+	for(int i=0; i<=numArtig; i++){
+		lseek(fd,i*sizeof(struct Vendas),SEEK_SET);
+		read(fd,&currentID,sizeof(int));
+		if(currentID==id){
+			return 1;
+		}
+	}
+	return 0;
+}
+
+void geraAgregacao(){
+int aggregationFile = open(nameFileAgregation(),O_CREAT | O_RDWR | O_APPEND, 0777); //<<--- é criado o ficheiro de agregação com o nome igual á data do momento em que é gerada a agregação
+int fdVendas = open(SaleFile,O_RDONLY,0777);
+int nSales = getNumVendas(fdVendas);//<<---- numero de vendas existente no ficheiro VENDAS.txt
+int idArt;
+
+	if(aggregationFile){
+
+		if(fdVendas){
+
+			for(int i = 0; i<nSales; i++){
+				lseek(fdVendas, i*sizeof(struct Vendas), SEEK_SET);
+				read(fdVendas, &idArt, sizeof(int));//<<----- lê apenas o campo referente ao id para a variavel idArt
+
+				if(existArtInAggregation(aggregationFile,idArt,nSales) != 1){
+					lseek(aggregationFile,0,SEEK_END); //<<<----------------------------------------------não sei até que ponto é necessário ter este LSEEK tendo em conta que o descritor é aberto de forma a que as escritas sejam feitas no final do ficheiro
+					write(aggregationFile, saleToAgregation(idArt, nSales),sizeof(struct Vendas));
+				}
+			}
+//			close(aggregationFile); //<---- supostamente nao é necessário ter este close do descritor pois como logo a seguir é chamada a função de impressão da agregação, esta mesma função de impressao trata de fechar o descritor
+			seeAllAggregation(aggregationFile);
+			close(fdVendas);
+
+		}else{
+			catchError(ERROR_32);
+		}
+
+	}else{
+		catchError(ERROR_33);
+	}
+}
+
+void viewVendaAggregation(Venda sale){
+char* msg = malloc(150*sizeof(char));
+
+	if(sale){
+
+		if(msg){
+			sprintf(msg,"\nVenda agregada:\n    ID artigo: %d\n    Quantidade total vendida: %.0f\n    Valor total das vendas: %.2f\n\n",sale->idArt,sale->quant,sale->vTotal);
+			write(1,msg,strlen(msg));
+			free(msg);
+		}else{
+			catchError(ERROR_28);
+		}
+
+	}else{
+		free(sale);
+		catchError(MSG_3);
+	}
+}
+
+void seeAllAggregation(int fd){
+int nAggregSales = getNumVendas(fd);
+Venda aux = malloc(sizeof(struct Vendas));
+
+	if(aux){
+		lseek(fd,0,SEEK_SET);
+		for(int i=0; i<nAggregSales; i++){
+			lseek(fd, i*sizeof(struct Vendas), SEEK_SET);
+			read(fd, aux,sizeof(struct Vendas));
+			viewVendaAggregation(aux);
+		}
+		free(aux);
+	}else{
+		catchError(ERROR_34);
 	}
 }
 
@@ -487,16 +635,17 @@ void menuComandosMA(char* buffer){//-------------------------------------FUNCION
   char* param2 = strtok(NULL," ");
   char* param3 = strtok(NULL," ");
   char* msg = malloc(50*sizeof(char));
+  char* line = malloc(100*sizeof(char));
+
+  int fd, n;
 
 	switch(*param1){
 		case 'i':
 			insereArtigo(param2,param3);
-			write(1,"\n",1);
 			break;
 		case 'n':
 			/*n <código> <novo nome> --> altera nome do artigo*/
 			editaNome(param2,param3);
-			write(1,"\n",1);
 			break;
 		case 'p':
 			/*p <código> <novo preço>   --> altera preço do artigo*/
@@ -506,12 +655,12 @@ void menuComandosMA(char* buffer){//-------------------------------------FUNCION
 			/*g <codigo>  -->  EXTRA - Dado o id de um artigo apresenta a sua ficha de artigo*/
 			viewArtigo(getArtigo(param2));
 			write(1,"\n",1);
-		break;
+      break;
 		case 's':
 			/*s <codigo>  -->  EXTRA - Dado um id de artigo devolve o seu stock*/
 			sprintf(msg, "Stock do artigo: %d é de %d unidades\n",atoi(param2),getStockI(atoi(param2)));
 			write(1, msg,48);
-		break;
+      break;
 		default:
 			system("clear");
 			write(1,"Opção inválida!\nInsira novo comando:\n",41);

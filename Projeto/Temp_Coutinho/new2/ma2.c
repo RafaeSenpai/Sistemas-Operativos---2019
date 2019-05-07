@@ -7,10 +7,6 @@ void main(){//-------------------------------------FUNCIONAL
 	char* filename = malloc(100*sizeof(char));
 	char* line = malloc(100*sizeof(char));
 
-	char* param1 = NULL;
-  char* param2 = NULL;
-  char* param3 = NULL;
-
 	while(read(0,filename,1024)){
 
 		if(strcmp(filename, "quit\n") == 0) break;
@@ -29,7 +25,4 @@ void main(){//-------------------------------------FUNCIONAL
 
 	free(filename);
 	free(line);
-	free(param1);
-	free(param2);
-	free(param3);
 }

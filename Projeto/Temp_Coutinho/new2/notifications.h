@@ -29,6 +29,14 @@
 #define ERROR_26 "Erro de descritor de ficheiro na função cv -> getVenda(...)!\nAo abrir o ficheiro VENDAS.txt\n\n"
 #define ERROR_27 "Erro de alocação de memória!\nNa função cv -> getVenda(...)\nVenda sale\n\n"
 #define ERROR_28 "Erro de alocação de memória!\nNa função cv -> viewVenda(...)\nchar* msg\n\n"
+#define ERROR_29 "Erro de alocação de memória!\nNa função ag -> agCriaStructVenda(...)\nVenda new\n\n"
+#define ERROR_30 "Erro de descritor de ficheiro na função ag -> atualizaStock(...)!\nAo abrir o ficheiro VENDAS.txt\n\n"
+#define ERROR_31 "Erro de alocação de memória!\nNa função ag -> nameFileAgregation()\nErro a gerar a string do nome para o ficheiro de agregação!\nchar* nametoAgregationFile\n\n"
+#define ERROR_32 "Erro de descritor de ficheiro na função ag -> geraAgregacao(...)!\nAo abrir o ficheiro VENDAS.txt\n\n"
+#define ERROR_33 "Erro de descritor de ficheiro na função ag -> geraAgregacao(...)!\nAo abrir o ficheiro de agregação, ''aggregationFile''.txt\n\n"
+#define ERROR_34 "Erro de alocação de memória!\nNa função ag -> seeAllAggregation(...)\nVenda aux\n\n"
+#define ERROR_35 "Erro de descritor de ficheiro na função ag -> main()!\nNão pode ser feita a agregação porque o ficheiro VENDAS.txt ainda nao se encontra criado!\n\n"
+
 
 #define MSG_1 "O ID do artigo inserido não existe!\n"
 #define MSG_2 "O ID do artigo do qual quer fazer alteração do stock não existe!\n"
