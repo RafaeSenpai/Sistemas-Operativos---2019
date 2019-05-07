@@ -93,7 +93,7 @@ int x;
 	    strcat(nametoAgregationFile,ctime(&data));
 	    x = strlen(nametoAgregationFile) - 1;
 	    nametoAgregationFile[x]='\0';
-	    return strcat(nametoAgregationFile,".txt\0");
+	    return nametoAgregationFile;
 	
 	}else{
 	
