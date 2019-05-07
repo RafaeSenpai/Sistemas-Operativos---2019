@@ -1,60 +1,62 @@
 #include "API.h"
 
 int main(int argc, char const *argv[]){
+  int client_to_server;
+  char *myfifo = "/tmp/client_to_server_fifo";
 
-   int client_to_server;
-   char *myfifo = "/tmp/client_to_server_fifo";
+  int server_to_client;
+  char *myfifo2 = "/tmp/server_to_client_fifo";
 
-   int server_to_client;
-   char *myfifo2 = "/tmp/server_to_client_fifo";
+  char buf[1024] = "";
+  char str[1024];
+  char buf1[1024] = "";
 
-   char buf[1024] = "";
-   char str[1024];
+  int status;
 
-   mkfifo(myfifo, 0666);
-   mkfifo(myfifo2, 0666);
-   int* ptr;
+  mkfifo(myfifo, 0666);
+  mkfifo(myfifo2, 0666);
 
-   client_to_server = open(myfifo, O_RDONLY);
-   server_to_client = open(myfifo2, O_WRONLY);
+   /* open, read, and display the message from the FIFO */
+  client_to_server = open(myfifo, O_RDONLY);
+  server_to_client = open(myfifo2, O_WRONLY);
 
-   write(1,"Server ON.\n",11);
+  write(1,"Server ON.\n",11);
 
-   while (1){
+  while (1){
 
-     if(argc == 1){
-       int n=read(client_to_server,buf,2048); // LER O QUE O CLIENTE ESCREVE
-       if (strcmp("exit\n",buf)==0){
-         break;
-       }
-       else if (strcmp("",buf)!=0){
-         menuComandosCV(buf);
-       }
-         memset(buf, 0, n);
-     }
+    int n=read(client_to_server,buf,1024); // LER O QUE O CLIENTE ESCREVE
+    strcpy(buf1,buf);
+    char* myfifo_final = malloc(200*sizeof(char));
+    strtok(buf1, " ");
+    strcat(myfifo_final,myfifo2);
+    strcat(myfifo_final,buf1);
+    //printf("%s\n",buf1);
+    //printf("-----------\n");
 
-     else{
+    if (strcmp("exit\n",buf)==0){
+      write(1,"Server OFF.\n",10);
+      break;
+    }
 
-       char* path = malloc(100*sizeof(char));
-       strcat(path, argv[1]);
+    else if (strcmp(" ",buf)!=0){
 
-       int fd = open(path, O_RDONLY, 0777);
+      if(fork()==0){
+        mkfifo(myfifo_final, 0666);
+        server_to_client = open(myfifo_final, O_WRONLY);
+        //printf("%s\n",myfifo_final);
+        write(1,"Received: ",11);
+        write(1,buf,n);
+        write(server_to_client,buf,n);
+        perror("Write:");
+        memset(buf, 0, n);
+      }
+      else{
+        wait(&status);
+      }
+    }
 
-       char* line = NULL;
-
-       while(1){
-
-         line = malloc(100 * sizeof(char));
-         line = fileReadLine(fd);
-
-         if(line == NULL){
-           free(path);
-           free(line);
-           break;
-         }
-       }
-     }
-   }
+    memset(buf, 0, sizeof(buf-1));
+  }
 
    close(client_to_server);
    close(server_to_client);

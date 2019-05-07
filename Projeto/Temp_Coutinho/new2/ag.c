@@ -63,7 +63,7 @@ Venda new = malloc(sizeof(struct Vendas));
 
 
 Venda saleToAgregation(int idArt, int numVendas){
-int fdVendas = open(SaleFile,O_RDONLY,0777);
+int fdVendas = open("VENDAS.txt",O_RDONLY,0777);
 float quantidade;
 float somaTodasQuantidades=0;
 float totalVenda;
@@ -118,7 +118,7 @@ int currentID;
 
 void geraAgregacao(){
 int aggregationFile = open(nameFileAgregation(),O_CREAT | O_RDWR | O_APPEND, 0777); //<<--- é criado o ficheiro de agregação com o nome igual á data do momento em que é gerada a agregação
-int fdVendas = open(SaleFile,O_RDONLY,0777);
+int fdVendas = open("VENDAS.txt",O_RDONLY,0777);
 int nSales = getNumVendas(fdVendas);//<<---- numero de vendas existente no ficheiro VENDAS.txt
 int idArt;
 

@@ -69,7 +69,7 @@ ArtigoFile new = malloc(sizeof(struct ArtigoF));
 
 
 void insereArtigo(char* nome,char* preco){//-----------------------------------FUNCIONAL
-	int fdStr = open(StringFile, O_CREAT |O_RDWR, 0777);
+	int fdStr = open("STRINGS.txt", O_CREAT |O_RDWR, 0777);
 	int nbStr;
 	
 	if(fdStr>-1){ 
@@ -81,7 +81,7 @@ void insereArtigo(char* nome,char* preco){//-----------------------------------F
 		catchMessage(ERROR_1);
 	}
 
-	int fdArt = open(ArtgsFile, O_CREAT |O_RDWR, 0777);
+	int fdArt = open("ARTIGOS.txt", O_CREAT |O_RDWR, 0777);
 	if(fdArt>-1){
 		int nbArt = lseek(fdArt,0,SEEK_END);
 
@@ -105,7 +105,7 @@ void insereArtigo(char* nome,char* preco){//-----------------------------------F
 	}
 
 	int quant = 0;
-	int fdStK = open(StockFile, O_CREAT | O_RDWR | O_APPEND, 0777);
+	int fdStK = open("STOCKS.txt", O_CREAT | O_RDWR | O_APPEND, 0777);
 	
 	if(fdStK>-1){
 		write(fdStK,&quant,sizeof(int));
@@ -119,7 +119,7 @@ void insereArtigo(char* nome,char* preco){//-----------------------------------F
 
 
 char* getNome(int edr_nome){//----------------------------------------------FUNCIONAL
-int fdStr = open(StringFile, O_RDONLY, 0777);
+int fdStr = open("STRINGS.txt", O_RDONLY, 0777);
 	if(fdStr>-1){
 		char* nome = malloc(100*sizeof(char));
 		
@@ -143,7 +143,7 @@ int fdStr = open(StringFile, O_RDONLY, 0777);
 
 
 int getStock(int id){
-int fdStK = open(StockFile, O_RDONLY, 0777);
+int fdStK = open("STOCKS.txt", O_RDONLY, 0777);
 	
 	if(fdStK>-1){
 		int nbEnd = lseek(fdStK,0,SEEK_END);
@@ -196,8 +196,8 @@ char* msg = malloc(200*sizeof(char));
 }
 
 
-Artigo getArtigo(char* id){ //--------------------FUNCIONAL
-int fdArt = open(ArtgsFile, O_RDONLY, 0777);
+Artigo getArtigo(char* id){ //--------------------FUNCIONAL!!!-------APENAS FAZER COM QUE DADO UM ID DE UM ARTIGO que nao existe ESTE NÃO APRESENTE INFORMAÇÃO NENHUMA
+int fdArt = open("ARTIGOS.txt", O_RDONLY, 0777);
 	
 	if(fdArt>-1){
 		
@@ -255,10 +255,10 @@ int fdArt = open(ArtgsFile, O_RDONLY, 0777);
 
 
 void editaNome(char* id, char* nome){ //-------------------------------FUNCIONAL
-int fdSTR = open(StringFile,O_RDWR);
+int fdSTR = open("STRINGS.txt",O_RDWR);
 
 	if(fdSTR>-1){
-		int fdART = open(ArtgsFile,O_RDWR);
+		int fdART = open("ARTIGOS.txt",O_RDWR);
 		
 		if(fdART>-1){
 			int nbEnd = lseek(fdART,0,SEEK_END); //numero de bytes lidos ate ao final do ficheiro Artigos
@@ -296,7 +296,7 @@ int fdSTR = open(StringFile,O_RDWR);
 
 void editaPreco(char* id, char* makeItRain){//--------------------------FUNCIONAL
 float catchincatchin;
-int fdART = open(ArtgsFile,O_RDWR);
+int fdART = open("ARTIGOS.txt",O_RDWR);
 	
 	if(fdART>-1){
 		int nbEnd = lseek(fdART,0,SEEK_END);
@@ -307,7 +307,6 @@ int fdART = open(ArtgsFile,O_RDWR);
 			catchincatchin = atof(makeItRain);
 			write(fdART, &catchincatchin, sizeof(float));
 			close(fdART);
-			viewArtigo(getArtigo(id));
 		}else{
 			close(fdART);
 			catchMessage(MSG_6);

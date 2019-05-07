@@ -374,14 +374,11 @@ float getPreco(char* id){
 }
 
 void getStockAndPrice(char* id){ //---------------------------------------------FUNCIONAL
-  printf("here\n");
-char* msg = malloc(100 * sizeof(char));
-printf("here\n");
+
+  char* msg = malloc(100 * sizeof(char));
 
 	sprintf(msg,"Stock: %d\nPreço: %.2f\n\n", getStockC(id), getPreco(id));
-  printf("here\n");
 	write(1,msg,strlen(msg));
-  printf("here\n");
 }
 /*
 void getStockAndPrice(char* id){ //---------------------------------------------FUNCIONAL

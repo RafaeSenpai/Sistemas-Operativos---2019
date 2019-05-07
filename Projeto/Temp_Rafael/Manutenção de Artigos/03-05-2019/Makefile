@@ -30,7 +30,7 @@ sv.o: sv.c
 
 
 cleanData:
-	rm -rf STRINGS.txt STOCKS.txt ARTIGOS.txt VENDAS.txt
+	rm -rf *.txt
 
 cleanAll:
-	rm -rf gestVendas ma.o maAPI.o notifications.o cv.o sv.o ma cv sv *.txt
+	rm -rf gestVendas *.o ma cv sv *.txt
