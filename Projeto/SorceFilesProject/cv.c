@@ -49,8 +49,8 @@ int main(int argc, char const *argv[])
    while(1){
             int n;
             char str[2048]; // +para o user escrever
-            char* str_pointer = malloc(100*sizeof(char)); //para concat as strings
-            str_pointer=&str[0];
+            //char* str_pointer = malloc(100*sizeof(char)); //para concat as strings
+            //str_pointer=&str[0];
             char* str1 = malloc(100*sizeof(char));
             char* myfifo_final = malloc(200*sizeof(char));
             // str=malloc(sizeof(BUFSIZ));
@@ -65,15 +65,14 @@ int main(int argc, char const *argv[])
               printf("%s\n",myfifo_final);
                 //n=0;
                 printf("---------------\n");
-
                 printf("%s\n",str1);
                 strcat(str1," ");
                 strcat(str1,str);
                 strcpy(str,str1);
                 write(1,"\ncmd message to serwer: \n",25);
-
-                write(1,str,strlen(str));
+                write(1,str,strlen(str)-1);
                 write(client_to_server, str,strlen(str));
+                write(1,"\n",1);
                 perror("Write:");
                 printf("%s\n",myfifo_final);
                 // strcat(myfifo2,);
@@ -87,9 +86,12 @@ int main(int argc, char const *argv[])
                 memset(str, 0, strlen(str));
                 free(str1);
                 free(myfifo_final); 
+                printf("-------------\n");
+                printf("%s\n",str1);
+                printf("---------------\n");
+                printf("%s\n",myfifo_final);
                 char* str1 = malloc(100*sizeof(char));
                 char* myfifo_final = malloc(200*sizeof(char));  
-
                 close(server_to_client);    
 
        /* remove the FIFO */
