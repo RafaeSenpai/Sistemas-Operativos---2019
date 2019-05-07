@@ -49,7 +49,7 @@ struct Vendas{
 
 
 
-ssize_t readln(int fildes, void *buf, size_t nbyte){//-----------------------FUNCIONAL
+ssize_t readln(int fildes, void *buf, size_t nbyte){
 int n;
 char c;
 char *buffer = (char *)buf;
@@ -256,14 +256,14 @@ Venda aux = malloc(sizeof(struct Vendas));
 		catchMessage(ERROR_34);
 	}
 }
-//-------------------------FIM API AGREGADOR -----------------------------
+//----------------FIM API AGREGADOR -----------------------
 
 
 
 
 
 
-//-----------------------------------API Cliente de Vendas -------------------------------------------
+//----------------API Cliente de Vendas -------------------
 Venda criaStructVenda(char* idArt, char* quant){
 Venda newSale = malloc(sizeof(struct Vendas));
 
@@ -470,7 +470,7 @@ float catchincatchin;
 
 
 
-void getStockAndPrice(char* id){ //---------------------------------------------FUNCIONAL
+void getStockAndPrice(char* id){
 char* msg = malloc(100 * sizeof(char));
 int fdART = open(ArtgsFile,O_RDWR);
 
@@ -496,7 +496,7 @@ int fdART = open(ArtgsFile,O_RDWR);
 	}
 }
 
-//--------------------------------FIM API Cliente de Vendas ---------------------------------
+//-----------------FIM API Cliente de Vendas -----------------------
 
 
 
@@ -509,17 +509,9 @@ int fdART = open(ArtgsFile,O_RDWR);
 
 
 
+//-----------------API  Manuetenção de Artigos ---------------------
 
-
-
-
-
-
-
-
-//---------------------------------API  Manuetenção de Artigos ------------------------------
-
-ArtigoFile criaStructArtigo(int nbArt, int nbStr,char* price){//---------------FUNCIONAL
+ArtigoFile criaStructArtigo(int nbArt, int nbStr,char* price){
 ArtigoFile new = malloc(sizeof(struct ArtigoF));
 	
 	if(new){
@@ -534,7 +526,7 @@ ArtigoFile new = malloc(sizeof(struct ArtigoF));
 }
 
 
-void insereArtigo(char* nome,char* preco){//-----------------------------------FUNCIONAL
+void insereArtigo(char* nome,char* preco){
 	int fdStr = open(StringFile, O_CREAT |O_RDWR, 0777);
 	int nbStr;
 	
@@ -584,7 +576,7 @@ void insereArtigo(char* nome,char* preco){//-----------------------------------F
 
 
 
-char* getNome(int edr_nome){//----------------------------------------------FUNCIONAL
+char* getNome(int edr_nome){
 int fdStr = open(StringFile, O_RDONLY, 0777);
 	if(fdStr>-1){
 		char* nome = malloc(100*sizeof(char));
@@ -656,7 +648,7 @@ char* msg = malloc(200*sizeof(char));
 }
 
 
-Artigo getArtigo(char* id){ //--------------------FUNCIONAL!!!-------APENAS FAZER COM QUE DADO UM ID DE UM ARTIGO que nao existe ESTE NÃO APRESENTE INFORMAÇÃO NENHUMA
+Artigo getArtigo(char* id){
 int fdArt = open(ArtgsFile, O_RDONLY, 0777);
 	
 	if(fdArt>-1){
@@ -714,7 +706,7 @@ int fdArt = open(ArtgsFile, O_RDONLY, 0777);
 
 
 
-void editaNome(char* id, char* nome){ //-------------------------------FUNCIONAL
+void editaNome(char* id, char* nome){
 int fdSTR = open(StringFile,O_RDWR);
 
 	if(fdSTR>-1){
@@ -754,7 +746,7 @@ int fdSTR = open(StringFile,O_RDWR);
 
 
 
-void editaPreco(char* id, char* makeItRain){//--------------------------FUNCIONAL
+void editaPreco(char* id, char* makeItRain){
 float catchincatchin;
 int fdART = open(ArtgsFile,O_RDWR);
 	
@@ -775,7 +767,7 @@ int fdART = open(ArtgsFile,O_RDWR);
 		catchMessage(ERROR_8);
 	}
 }
-//-----------------------------FIM API Manutenção de Artigos -----------------------
+//---------------FIM API Manutenção de Artigos ------------------
 
 
 
@@ -793,7 +785,7 @@ int fdART = open(ArtgsFile,O_RDWR);
 //-----------------------------todos os interpretadores de comandos
 //------------------------------------------INTERPRETADOR DE COMANDOS PARA O cliente de vendas e agregação
 
-void menuComandos(char* buffer){//----------------------------------------------FUNCIONAL
+void menuComandos(char* buffer){
 char* param1 = strtok(buffer," ");
 char* param2 = strtok(NULL," ");
 int countParams = 0;
@@ -849,7 +841,7 @@ char* ag = "ag";
 
 
 //---------------------------------------------INTERPRETADOR DE COMANDOS da Manutenção de artigos--------------------
-void maMenuComandos(char* buffer){//-------------------------------------FUNCIONAL
+void maMenuComandos(char* buffer){
 char* param1 = strtok(buffer," ");
 char* param2 = strtok(NULL," ");
 char* param3 = strtok(NULL," ");

@@ -7,23 +7,14 @@
 	Estrutura do artigo no ficheiro artigos
 */
 typedef struct ArtigoF *ArtigoFile;
-
-
 /*
 	Estrutura generica do artigo
 */
 typedef struct Artigo *Artigo;
-
-
 /*
 	Estrutura de uma Venda no ficheiro Vendas
 */
 typedef struct Vendas *Venda;
-
-
-
-
-
 
 
 
@@ -34,18 +25,11 @@ ssize_t readln(int fildes, void *buf, size_t nbyte);
 
 
 
-
-
-
-
-
-
 //-------------API AGREGADOR --------------
 /*
 	Dado um descritor de ficheiro, neste caso, do ficheiro VENDAS.txt, devolve o numero de vendas existente nesse ficheiro
 */
 int getNumVendas(int fd);
-
 
 /*
 	Esta função devolve uma string que apresenta a data e hora f cinalizada com ".txt"
@@ -53,13 +37,11 @@ int getNumVendas(int fd);
 */
 char* nameFileAgregation();
 
-
 /*
 	Cria uma estrutura de venda com o id do artigo, a soma de todas as quantidades vendidas desse artigo e o resultado obtido da soma de todos os totais de venda de todas as vendas desse artigo.
 	A obtenção destes resultados a serem guardados na estrutura é feita sobre o ficheiro VENDAS.txt
 */
 Venda agCriaStructVenda(int idArtigo, float qtdTotalVendas, float totalVendas);
-
 
 /*
 	Cria uma venda com os valores totais do artigo após a procura de todas as suas vendas no ficheiro VENDAS.txt
@@ -87,13 +69,10 @@ int existArtInAggregation(int fd, int id, int numArtig);
 */
 void geraAgregacao();
 
-
 /*
 	Imprimir toda a agregação atual
 */
 void viewVendaAggregation(Venda sale);
-
-
 
 /*
 	Imprimir toda a agregação no ecra
@@ -105,12 +84,6 @@ void seeAllAggregation(int fd);
 
 
 //---------------API Cliente de Vendas ---------------------
-void atualizaStock(char* cod, char* qt);
-
-float getPreco(char* id);
-
-Venda criaStructVenda(char* idArt, char* quant);
-
 /*
 	Vai buscar uma venda numa determinada posição
 	O objetivo desta função não é explorar a necessidade 
@@ -120,6 +93,12 @@ Venda criaStructVenda(char* idArt, char* quant);
 */
 Venda getVenda(char* x);
 
+void atualizaStock(char* cod, char* qt);
+
+Venda criaStructVenda(char* idArt, char* quant);
+
+float getPreco(char* id);
+
 void viewVenda(Venda x);
 
 void getStockAndPrice(char* id);
@@ -127,8 +106,10 @@ void getStockAndPrice(char* id);
 void menuComandos(char* buffer);
 
 
-//-------------API Manutenção de Artigos -------------------
 
+
+
+//-------------API Manutenção de Artigos -------------------
 /*
 	Cria estrutura de Artigo a ser guardada no ficheiro ARTIGOS.txt
 	.nbArt: numero de bytes lidos até ao final do ficheiro ARTIGOS.txt
@@ -141,8 +122,6 @@ void menuComandos(char* buffer);
 	NOTA: Esta função não tem o seu prototipo declarado no .h pois é de uso interno da API
 */
 ArtigoFile criaStructArtigo(int nbArt, int nbStr,char* price);
-
-
 
 /*
 	Tendo em conta os requisitos exigidos pelo projeto, esta função é considerada 
@@ -204,5 +183,4 @@ void editaPreco(char* id, char* makeItRain);
 
 
 void maMenuComandos(char* buffer);
-//------------------------------------------FIM API Manutenção de artigos --------------------------------------
 #endif
