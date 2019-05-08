@@ -6,6 +6,7 @@
 #include <sys/wait.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 
 /*
 void eliminate_spaces(char *cmd){
@@ -36,16 +37,69 @@ void eliminate_spaces(char *cmd){
 
 int main(int argc, char const *argv[])
 {
+
+  int public;
+  char *myfifo = "/tmp/client_to_server_fifo";
+
+  public = open(myfifo, O_WRONLY);
+
+
+   char* pid=malloc(sizeof(char));
+   char* cv=malloc(20*sizeof(char));
+   strcpy(cv,"cliente ");
+   sprintf(pid,"%d",getppid());
+   strcat(cv,pid);
+   write(public, cv,strlen(cv));
+   printf("%s\n",cv);
+
    int client_to_server;
-   char *myfifo = "/tmp/client_to_server_fifo";
+   char *myfifo1 = malloc(15*sizeof(char));
 
    int server_to_client;
-   char *myfifo2 = "/tmp/server_to_client_fifo";
+   char *myfifo2 = malloc(15*sizeof(char));
+   
+   strcpy(myfifo1,"/tmp/W");
+   strcat(myfifo1,pid);
+   strcpy(myfifo2,"/tmp/R");
+   strcat(myfifo2,pid);
 
-   client_to_server = open(myfifo, O_WRONLY);// ESCREVER O CLIENTE
+   mkfifo(myfifo1, 0777);
+   mkfifo(myfifo2, 0777);
+
+   printf("%s\n",myfifo2);
+   printf("%s\n",myfifo1);
+
+  
+  client_to_server = open(myfifo1, O_WRONLY,0777);
+  server_to_client = open(myfifo2, O_RDONLY,0777);
+
+  char buf[1024];
+
+    int n;
+    printf("-------\n");
+    while((n=read(server_to_client,buf,1024))>0){
+            perror("Read:");
+            printf("%s\n",buf);
+    }
+
+    close(server_to_client);
+    close(client_to_server);
+    close(public);
+
+  return 0;
+
+
+}
+
+
+
+
+
+
+   // ESCREVER O CLIENTE
    //server_to_client = open(myfifo2, O_RDONLY); // LER O QUE O SERVER MANDA.REPARA QUE UM LÊ E OUTRO ESCREVE(NOS 2 FICHEIROS E SÃO ALTERNADOS)
    
-   /* write str to the FIFO */
+   /* write str to the FIFO 
    while(1){
             int n;
             char str[2048]; // +para o user escrever
@@ -94,7 +148,7 @@ int main(int argc, char const *argv[])
                 char* myfifo_final = malloc(200*sizeof(char));  
                 close(server_to_client);    
 
-       /* remove the FIFO */
+       /* remove the FIFO 
      }
      memset(str, 0, sizeof(str));
       
@@ -103,7 +157,7 @@ int main(int argc, char const *argv[])
       //close(server_to_client);
     return 0;
 }
-
+*/
 
 
 
