@@ -21,6 +21,7 @@ int main(int argc, char const *argv[]){
   char* str1 = NULL;
   char* myfifo_final = NULL;
 
+
   while(1){
      int n;
 
@@ -43,6 +44,7 @@ int main(int argc, char const *argv[]){
        perror("Write:");
        printf("%s\n",myfifo_final);
        server_to_client = open(myfifo_final, O_RDONLY); // LER O QUE O SERVER MANDA.REPARA QUE UM LÊ E OUTRO ESCREVE(NOS 2 FICHEIROS E SÃO ALTERNADOS)
+       
        printf("%s\n",myfifo_final);
        read(server_to_client,str,2048);
        perror("Read:");
