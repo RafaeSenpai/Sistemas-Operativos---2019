@@ -73,16 +73,8 @@ ssize_t nbytes = 0;
 
 
 
-//--------------------------------------------------API AGREGADOR -----------------------------------
-int getNumVendas(int fd){
-int totBytes = lseek(fd,0,SEEK_END);//Numero de bytes lidos até á inserção do artigo no ficheiro artigos
-
-	return totBytes/(sizeof(struct Vendas));
-}
-
-
-
-char* nameFileAgregation(){
+//-----------------API AGREGADOR -------------------
+char* nameFileAgregation(){//---------------------------------------------------------------------------------------SUPOSTAMENTE OPERACIONAL
 time_t data;
 data = time(NULL);
 char* nametoAgregationFile = malloc(50*sizeof(char));
@@ -104,10 +96,31 @@ int x;
 
 
 
+/*
+	Devolve o numero de vendas desde uma determinada posição do ficheio VENDAS, indicada pelo 
+	inteiro existente no inicio do ficheiro VENDAS, que representa o numero da ultima 
+	venda incluida da ultima agregação até á ultima venda registada no ficheiro VENDAS.
+	É feita a contabilização de todos os bytes referentes 
+	ao fichiro vendas, em seguida é subtraido a esse mesmo numero de bytes os bytes reservados 
+	ao inteiro que indica qual foi a ultima venda incluida na ultima agregação e desta forma 
+	temos o numero total de bytes do ficheiro VENDAS referentes somente a vendas(estruturas de vendas).
+	Ao resultado obtido até ao momento é então subtraido os bytes contidos no ficheiro desde a ultima 
+	venda agregada até a ultima venda registada.
+	Por fim, a ultimo resultado, é feita a divisão pelo tamanho da estrutura de uma venda e desta forma 
+	obtem-se o numero de vendas efetuadas desde a ultima agregação.
+*/
+int getNumVendas(int fd,int posInicial){//........------------------------------------------------------------------SUPOSTAMENTE OPERACIONAL
+
+		int totBytes = (lseek(fd,0,SEEK_END) - sizeof(int)) - lseek(fd,posInicial*sizeof(struct Vendas),SEEK_SET);//Numero de bytes lidos até á inserção do artigo no ficheiro artigos
+	
+	return totBytes/(sizeof(struct Vendas));//a subtração do sizeof(int) advem que para calcular o numero de vendas no ficheiro, o inteiro que é guardado no inicio do ficheiro(referente ao nº da ultima linha que foi agregada na ultima agregação) vendas não deve ser tido em conta para o calculo
+}
 
 
 
-Venda agCriaStructVenda(int idArtigo, float qtdTotalVendas, float totalVendas){
+
+
+Venda agCriaStructVenda(int idArtigo, float qtdTotalVendas, float totalVendas){ //----------------------------------SUPOSTAMENTE  OPERACIONAL
 Venda new = malloc(sizeof(struct Vendas));
 
 	if(new){
@@ -125,7 +138,7 @@ Venda new = malloc(sizeof(struct Vendas));
 
 
 
-Venda saleToAgregation(int idArt, int numVendas){
+Venda saleToAgregation(int idArt, int lastSaleInclAggr, int numVendas){ //----------------------ULTIMO PASSO! ------>SUPOSTAMENTE OPERACIONAL<-------
 int fdVendas = open(SaleFile,O_RDONLY,0777);
 float quantidade;
 float somaTodasQuantidades=0;
@@ -134,22 +147,23 @@ float somaTodosTotaisV=0;
 int id;
 	
 	if(fdVendas){
+		lseek(fdVendas,sizeof(int) + lastSaleInclAggr*sizeof(struct Vendas),SEEK_SET); //<<-----posiciona-se no ficheiro VENDAS para o local onde deve começar a fazer a agregação não esquecendo que tem que somar o espaºo reservado do inteiro no inicio do ficheiro
 		for(int i=0; i<numVendas; i++){
-			lseek(fdVendas, i*sizeof(struct Vendas), SEEK_SET);
-			read(fdVendas, &id, sizeof(int));
+			lseek(fdVendas, i*sizeof(struct Vendas), SEEK_CUR);//<<---------------começa a agregar os dados a partir do ponto determinado no passo anterior
+			read(fdVendas, &id, sizeof(int));//<<---------------------------------captura o id do artigo na posição corrente no ficheiro VENDAS
 
-			if(id==idArt){
-				lseek(fdVendas, (i*sizeof(struct Vendas)) + sizeof(int), SEEK_SET);
+			if(id==idArt){//<<----------------------------------------------------verifica se o id capturado no passo anterior é igual ao id do artigo(idArt) que se quer encontrar
+				lseek(fdVendas, sizeof(int) + (i*sizeof(struct Vendas)) + sizeof(int), SEEK_SET); //<<-------verificada a igualdade no paso anterior reposiciona-se no ficheiro para a leitura e armazenamento da venda no ficheiro VENDAS para as devidas variaveis
 				read(fdVendas, &quantidade, sizeof(float));
-				somaTodasQuantidades += quantidade;
+				somaTodasQuantidades += quantidade; //<<-----------------------------------------------------vai acumulando a soma de todos as informações, neste caso, todas as quantidades vendidas
 				
-				lseek(fdVendas, (i*sizeof(struct Vendas)) + sizeof(int) + sizeof(float), SEEK_SET);
+				lseek(fdVendas, sizeof(int) + (i*sizeof(struct Vendas)) + sizeof(int) + sizeof(float), SEEK_SET);//<<------repete os ultimos 3 passos anteriores, mas agora para os totais das vendas
 				read(fdVendas, &totalVenda, sizeof(float));
 				somaTodosTotaisV += totalVenda;
 			}
 		}
 		close(fdVendas);
-		return agCriaStructVenda(idArt,somaTodasQuantidades,somaTodosTotaisV);
+		return agCriaStructVenda(idArt,somaTodasQuantidades,somaTodosTotaisV);//<<------guarda as somas dos resultados numa estrutura do tipo venda e armazena a mesma no ficheiro de agregação
 	}else{
 		catchMessage(ERROR_30);
 		return NULL;
@@ -161,7 +175,7 @@ int id;
 
 
 
-int existArtInAggregation(int fd, int id, int numArtig){
+int existArtInAggregation(int fd, int id, int numArtig){//-----------------------------------------------------------SUPOSTAMENTE OPERACIONAL
 int currentID;
 
 	for(int i=0; i<=numArtig; i++){
@@ -179,23 +193,29 @@ int currentID;
 
 
 
-void geraAgregacao(){
+void geraAgregacao(){//----------------------------------------------------------------------------------------------SUPOSTAMENTE OPERACIONAL
 int aggregationFile = open(nameFileAgregation(),O_CREAT | O_RDWR | O_APPEND, 0777); //<<--- é criado o ficheiro de agregação com o nome igual á data do momento em que é gerada a agregação
 int fdVendas = open(SaleFile,O_RDONLY,0777);
-int nSales = getNumVendas(fdVendas);//<<---- numero de vendas existente no ficheiro VENDAS.txt
-int idArt;
+
+
 
 	if(aggregationFile){	
 
 		if(fdVendas){
+			lseek(fdVendas,0,SEEK_SET);
+			int ultLinhaAgregada;
+			read(fdVendas,&ultLinhaAgregada,sizeof(int));//------captura o valor referente ao numero da ultima venda incluida na ultima agregação
+			int nSales = getNumVendas(fdVendas,ultLinhaAgregada);//<<---- numero de vendas existente no ficheiro VENDAS desde a ultima agregação até ao momento
+			int idArt;			
+			int lastSaleInclAggr = ultLinhaAgregada;
 
-			for(int i = 0; i<nSales; i++){
-				lseek(fdVendas, i*sizeof(struct Vendas), SEEK_SET);
+			for(;ultLinhaAgregada<nSales; ultLinhaAgregada++){
+				lseek(fdVendas, ultLinhaAgregada*sizeof(struct Vendas), SEEK_SET);
 				read(fdVendas, &idArt, sizeof(int));//<<----- lê apenas o campo referente ao id para a variavel idArt
 				
 				if(existArtInAggregation(aggregationFile,idArt,nSales) != 1){
 					lseek(aggregationFile,0,SEEK_END); //<<<----------------------------------------------não sei até que ponto é necessário ter este LSEEK tendo em conta que o descritor é aberto de forma a que as escritas sejam feitas no final do ficheiro
-					write(aggregationFile, saleToAgregation(idArt, nSales),sizeof(struct Vendas));
+					write(aggregationFile, saleToAgregation(idArt, lastSaleInclAggr, nSales),sizeof(struct Vendas));
 				}
 			}
 //			close(aggregationFile); //<---- supostamente nao é necessário ter este close do descritor pois como logo a seguir é chamada a função de impressão da agregação, esta mesma função de impressao trata de fechar o descritor
@@ -216,7 +236,7 @@ int idArt;
 /*
 	Imprimir toda a agregação atual
 */
-void viewVendaAggregation(Venda sale){
+void viewVendaAggregation(Venda sale){//----------------------------------------------------------------------------SUPOSTAMENTE OPERACIONAL
 char* msg = malloc(150*sizeof(char));
 
 	if(sale){
@@ -240,14 +260,14 @@ char* msg = malloc(150*sizeof(char));
 /*
 	Imprimir toda a agregação no ecra
 */
-void seeAllAggregation(int fd){
-int nAggregSales = getNumVendas(fd);
+void seeAllAggregation(int fd){ //----------------------------------------------------------------------------------SUPOSTAMENTE OPERACIONAL
+int nAggregSales = getNumVendas(fd,0);
 Venda aux = malloc(sizeof(struct Vendas));
 	
 	if(aux){
 		lseek(fd,0,SEEK_SET);
 		for(int i=0; i<nAggregSales; i++){
-			lseek(fd, i*sizeof(struct Vendas), SEEK_SET);
+			lseek(fd, sizeof(int) + (i*sizeof(struct Vendas)), SEEK_SET);
 			read(fd, aux,sizeof(struct Vendas));
 			viewVendaAggregation(aux);
 		}
@@ -264,7 +284,7 @@ Venda aux = malloc(sizeof(struct Vendas));
 
 
 //----------------API Cliente de Vendas -------------------
-Venda criaStructVenda(char* idArt, char* quant){
+Venda criaStructVenda(char* idArt, char* quant){//--------------------------------OPERACIONAL
 Venda newSale = malloc(sizeof(struct Vendas));
 
 	if(newSale){
@@ -287,7 +307,7 @@ Venda newSale = malloc(sizeof(struct Vendas));
 }
 
 
-void atualizaStock(char* cod, char* qt){
+void atualizaStock(char* cod, char* qt){//<<----------------------------------------SUPOSTAMENTE FUNCIONAL
 int fdSTK = open(StockFile,O_RDWR);
 int qtdAtual = 0;
 int newStock = 0;
@@ -301,7 +321,7 @@ int newStock = 0;
 			int fdVendas = open(SaleFile,O_CREAT | O_RDWR | O_APPEND,0777);
 			
 			if(fdVendas>-1){
-				lseek(fdSTK, atoi(cod)*sizeof(int),SEEK_SET);
+				lseek(fdSTK, sizeof(int) + (atoi(cod)*sizeof(int)),SEEK_SET); //<-------------------O sizeof(int) no inicio da descrição offset é referente ao inteiro guardado no inicio do ficheiro, este inteiro indica o numero da ultima linha que foi agregada
 				read(fdSTK,&qtdAtual,sizeof(int));
 				newStock = qtdAtual + (atoi(qt));
 				
@@ -384,20 +404,20 @@ int newStock = 0;
 
 
 
-Venda getVenda(char* x){
+Venda getVenda(char* x){ //----------------------------SUPOSTAMENTE FUNCIONAL
 int fdVendas = open(SaleFile,O_RDONLY);
 Venda sale = NULL;
 
 	if(fdVendas){
 		int nbEnd = lseek(fdVendas,0,SEEK_END); //numero de bytes existentes ate ao final do ficheiro
-		int nbLocal = lseek(fdVendas,atoi(x)*sizeof(struct Vendas),SEEK_SET);	//numero de bytes até á estrutura que se quer ler
+		int nbLocal = lseek(fdVendas,sizeof(int) + (atoi(x)*sizeof(struct Vendas)),SEEK_SET);	//numero de bytes até á estrutura que se quer ler; O sizeof(int) no inicio da descrição offset é referente ao inteiro guardado no inicio do ficheiro, este inteiro indica o numero da ultima linha que foi agregada
 		sale = malloc(sizeof(struct Vendas));
 		
 		if(sale){
 
 			if(nbLocal<nbEnd){//se o "numero" da venda a procurar não existir retorna NULL
 				if(atoi(x)>=0){	
-					lseek(fdVendas,atoi(x)*sizeof(struct Vendas),SEEK_SET);	
+					lseek(fdVendas,sizeof(int) + (atoi(x)*sizeof(struct Vendas)),SEEK_SET);	
 					read(fdVendas,sale,sizeof(struct Vendas));
 					close(fdVendas);
 					//não posso fazer free snao perco a informação que quero devolver
