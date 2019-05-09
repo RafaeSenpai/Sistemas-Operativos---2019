@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
@@ -12,14 +13,14 @@ int main(int argc, char const *argv[]){
 
   int n;
 
-  char* pid=malloc(sizeof(char));
-  char* cv=malloc(20*sizeof(char));
+  char* pid = malloc(sizeof(char));
+  char* cv = malloc(20*sizeof(char));
   strcpy(cv,"cliente ");
   sprintf(pid,"%d",getppid());
   strcat(cv,pid);
 
   int public;
-  char *myfifo = "/tmp/client_to_server_fifo";
+  char *publicfifo = "/tmp/client_to_server_fifo";
 
   int client_to_server;
   char *myfifo1 = malloc(50*sizeof(char));
@@ -27,37 +28,45 @@ int main(int argc, char const *argv[]){
   int server_to_client;
   char *myfifo2 = malloc(50*sizeof(char));
 
-  printf("%s\n",cv);
+  char* buf = malloc(100*sizeof(char));
+  char* buf1 = malloc(100*sizeof(char));
 
   strcpy(myfifo1,"/tmp/W");
   strcat(myfifo1,pid);
   strcpy(myfifo2,"/tmp/R");
   strcat(myfifo2,pid);
 
-  printf("%s\n",myfifo2);
-  printf("%s\n",myfifo1);
+  if((n=mkfifo(myfifo1, 0777))==-1) perror("myfifo1:");
+  if((n=mkfifo(myfifo2, 0777))==-1) perror("myfifo2:");
 
-  mkfifo(myfifo1, 0777);
-  mkfifo(myfifo2, 0777);
-
-  if((public = open(myfifo, O_WRONLY)) == -1) perror("OPEN 1:");
-  write(public, cv,strlen(cv));
-
-  if((server_to_client = open(myfifo2, O_RDONLY,0777))==-1) perror("OPEN 3:");
+  if((public = open(publicfifo, O_WRONLY, 0777)) == -1) perror("OPEN 1:");
+  if((n = write(public, cv,strlen(cv)))==-1) perror("WRITE 1:");
+  printf("cv:%s\n", cv);
+  printf("here\n");
+  printf("%d------\n",client_to_server );
   if((client_to_server = open(myfifo1, O_WRONLY,0777))==-1) perror("OPEN 2:");
+  printf("client %d\n", client_to_server);
+  if((server_to_client = open(myfifo2, O_RDONLY,0777))==-1) perror("OPEN 3:");
 
-  char* buf = malloc(100*sizeof(char));
-  printf("-------\n");
+  while(1){
 
-  while((n=read(server_to_client,buf,1024))>0){
-    perror("Read:");
-    printf("%s\n",buf);
+    while((n=read(0,buf,1024))>0){
+
+      printf("here\n");
+
+      //if(strcmp(buf, " ") != 0 && strcmp(buf, "\n") == 0 ){
+        printf("buf: %s\n",buf);
+        if((n=write(client_to_server,buf, strlen(buf)))==-1) perror("WRITE 2:");
+        if((n=read(server_to_client,buf1,100))==-1) perror("READ 1:");
+        printf("resposta: %s\n",buf1);
+
+        buf1 = calloc(100, sizeof(char));
+      //}
+      buf = calloc(100, sizeof(char));
+    }
   }
-
-  close(server_to_client);
-  close(client_to_server);
-  close(public);
-
+  unlink(myfifo1);
+  unlink(myfifo2);
   return 0;
 }
 
@@ -76,7 +85,7 @@ int main(int argc, char const *argv[])
    client_to_server = open(myfifo, O_WRONLY);// ESCREVER O CLIENTE
    server_to_client = open(myfifo2, O_RDONLY); // LER O QUE O SERVER MANDA.REPARA QUE UM LÊ E OUTRO ESCREVE(NOS 2 FICHEIROS E SÃO ALTERNADOS)
    // meter os nomes iguais logo metes myfifo+ pid para ser igual ao server
-   /* write str to the FIFO
+    write str to the FIFO
    while(1){
 
 
@@ -123,7 +132,6 @@ int main(int argc, char const *argv[])
 		          		    perror("Read:"); // Very crude error check
 		                  write(1,"----------\n",11);
 		                  write(1,str,strlen(str));
-		                  memset(str, 0, sizeof(str));
 
             	}
                 //write(client_to_server,&pid,sizeof(pid_t));
