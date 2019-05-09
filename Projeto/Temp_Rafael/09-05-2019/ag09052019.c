@@ -1,3 +1,6 @@
+/*
+	EStrutura que integra o ficheiro log
+*/
 typedef struct Log{
 	char nameFile[50];
 	int status;
@@ -7,9 +10,9 @@ typedef struct Log{
 
 
 /*
-	Gere um nome para o ficheiro de agregação com a data e hora corrente aquando a invocação da função
+	Cria um nome para o ficheiro de agregação com a data e hora corrente aquando a invocação da função
 */
-char* nameFileAgregation(){
+char* nameFileAggregation(){
 time_t data;
 data = time(NULL);
 char* nametoAgregationFile = malloc(50*sizeof(char));
@@ -43,10 +46,10 @@ int x;
 		lastAggregateSale: indica a posição no ficheiro vendas em que foi interrompida ou finalizada a agregação indicada em nameFile
 
 */
-void gerarLogFile(char* nameFileAggregation){
+void gerarLogFile(char* nameFileAgg){
 	LogFile newLog = malloc(sizeof(struct Log));
 	
-	strcat(newLog->nameFile,nameFileAggregation);
+	strcat(newLog->nameFile,nameFileAgg);
 	newLog->status = 0;
 	newLog->lastAggregateSale = 0;
 
@@ -151,10 +154,11 @@ void setLastAggregateSale(int newPosition){
 
 }
 
+
 /*
 	Verifica se existe algum ficheiro log já criado
 */
-int existLogFIle(){
+int existLogFile(){
 	int fdLog = open("log",O_WRONLY,0777);
 
 	if(fdLog<0){
@@ -199,5 +203,146 @@ int getNumVendas(int fdVendas){
 		close(fdVendas);
 
 	return totBytes/(sizeof(struct Vendas));
-
 }
+
+/*
+	Imprimir toda a agregação atual
+*/
+void viewVendaAggregation(Venda sale){
+char* msg = malloc(150*sizeof(char));
+
+	if(sale){
+
+		if(msg){
+			sprintf(msg,"\nVenda agregada:\n    ID artigo: %d\n    Quantidade total vendida: %.0f\n    Valor total das vendas: %.2f\n\n",sale->idArt,sale->quant,sale->vTotal);
+			write(1,msg,strlen(msg));
+			free(msg);
+		}else{
+			catchMessage(ERROR_28);
+		}
+
+	}else{
+		free(sale);
+		catchMessage(MSG_3);
+	}
+}
+
+
+/*
+	Imprimir toda a agregação no ecra
+*/
+void seeAllAggregation(int fd){
+int nAggregSales = getNumVendas(fd);
+Venda aux = malloc(sizeof(struct Vendas));
+	
+	if(aux){
+		lseek(fd,0,SEEK_SET);
+		for(int i=0; i<nAggregSales; i++){
+			lseek(fd, i*sizeof(struct Vendas), SEEK_SET);
+			read(fd, aux,sizeof(struct Vendas));
+			viewVendaAggregation(aux);
+		}
+		free(aux);
+	}else{
+		catchMessage(ERROR_34);
+	}
+}
+
+
+/*
+	Dada uma posição de uma venda no ficheiro de vendas, devolve a respetiva venda 
+*/
+Venda getVendaToAggregation(int numVenda){
+int fdVendas = open(SaleFile,O_RDONLY);
+Venda sale = NULL;
+
+	if(fdVendas){
+		int nbEnd = lseek(fdVendas,0,SEEK_END); //numero de bytes existentes ate ao final do ficheiro
+		int nbLocal = lseek(fdVendas,numVenda*sizeof(struct Vendas),SEEK_SET);	//numero de bytes até á estrutura que se quer ler
+		sale = malloc(sizeof(struct Vendas));
+		
+		if(sale){
+
+			if(nbLocal<nbEnd){//se o "numero" da venda a procurar não existir retorna NULL
+				if(numVenda>=0){	
+					lseek(fdVendas,numVenda*sizeof(struct Vendas),SEEK_SET);	
+					read(fdVendas,sale,sizeof(struct Vendas));
+					close(fdVendas);
+					//não posso fazer free snao perco a informação que quero devolver
+					return sale;
+				}else{
+					close(fdVendas);
+					catchMessage(MSG_1);
+				}
+			}else{
+				close(fdVendas);
+				return NULL;
+			}
+
+		}else{
+			close(fdVendas);
+			catchMessage(ERROR_27);
+		}
+
+	}else{
+		catchMessage(ERROR_26);
+	}
+
+return NULL;
+}
+
+
+int runAggregation(char* aggFileName, int nLastSale){
+	int fdVendas = open("vendas",O_RDONLY,0777);
+	Venda sale = malloc(sizeof(struct Venda));
+
+		int nTotalDeVendas = getNumVendas(fdVendas);
+		close(fdVendas);
+
+		nLastSale++;//<<<-----para não agregar novamente a ultima venda que tinha sido agregada na ultima agregação
+
+		for(;nLastSale<=nTotalDeVendas;nLastSale++){ //<<----pode dar erro aqui por causa do <= ou por causa do for(;...)
+			sale = getVendaToAggregation(nLastSale);
+
+			int idArtV = getIDArtigo(sale);
+			float qtV = getQuantidade(sale);
+			float valTotV = getValTotal(sale);
+
+			int fdAgg = open(aggFileName,O_RDWR,0777);
+			lseek(fdAgg,idArtV*sizeof(struct Vendas),SEEK_SET);
+
+			if((read(fdAgg,sale,sizeof(struct Vendas)))<0){//<<---seja já existir uma venda naquela posição ele vai guardar o conteudodessa venda para a estrutura"sale" e devolver um valor >0, se não existir nenhuma venda naquela posição entao não vai guardar nada para a estrutur sale e vai devolver um valor >0
+				write(fdAgg,getVendaToAggregation(nLastSale),sizeof(struct Vendas));	 
+				setLastAggregateSale(nLastSale-1);
+				free(sale);
+			}else{//<<---caso já exista outra venda do mesmo artigo naquela posição no ficheiro de agregação
+				sale->idArt = idArtV;
+				sale->quant += qtV;
+				sale->vTotal += valTotV;
+				write(fdAgg,sale, sizeof(struct Vendas));
+				setLastAggregateSale(nLastSale-1);
+				free(sale);
+			}
+		}
+		setNewStatus(1);
+	return fdAgg;
+}
+
+
+
+void gerarAgregacao(){
+
+	if(existLogFile()==1){//<<--caso exista um ficheiro log já criado
+		if(getLogStatus()==1){//<<--a ultima agregação foi concluida com sucesso
+			setLogNewAggregationFileName(nameFileAggregation());
+			setNewStatus(0); //<<---0 - Não foi concluida com exito a agregação indicada em nameFile (ex: pode ser o caso em que foi interrompida a meio)
+			seeAllAggregation(runAggregation(getAggregationFileName(),getLogLastAggregateSale()));
+		}else{//<<--- casp a ultima agregação não tenha sido concluida com sucesso
+			seeAllAggregation(runAggregation(getAggregationFileName(),getLogLastAggregateSale()));
+		}
+	}else{//<<---caso não exista nenhum ficheiro log
+		gerarLogFile(nameFileAggregation());
+		seeAllAggregation(runAggregation(getAggregationFileName(),getLogLastAggregateSale()));
+	}
+}
+

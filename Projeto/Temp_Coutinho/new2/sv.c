@@ -73,7 +73,9 @@ int main(int argc, char const *argv[]) {
         buf = calloc(100, sizeof(char));
         _exit(0);
       }
-      wait(&status);
+ 	break;
+   	
+       	//  wait(&status);
     }
   }
 }
