@@ -11,7 +11,7 @@ int main(){
 
   int n, status, public;
 
-  char *publicfifo = "/tmp/publicfifo";
+  char *publicfifo = "./fifos/publicfifo";
   if((n=mkfifo(publicfifo,0777))==-1) perror("MKFIFO 1:");
   if((public = open(publicfifo, O_RDONLY,0777)) == -1) perror("OPEN 1:");
   printf("public: %d\n", public);
@@ -32,12 +32,14 @@ int main(){
 
     char* cenas  = strtok(buf," ");
     char* cenas2 = strtok(NULL," ");
-    strcpy(myfifo1,"/tmp/W");
+    strcpy(myfifo1,"./fifos/W");
     strcat(myfifo1,cenas2);
     printf("myfifo1: %s\n", myfifo1);
-    strcpy(myfifo2,"/tmp/R");
+    strcpy(myfifo2,"./fifos/R");
     strcat(myfifo2,cenas2);
     printf("myfifo2: %s\n", myfifo2);
+
+    sleep(1);
 
     if((client_to_server = open(myfifo1, O_RDONLY,0777))==-1) perror("OPEN 2:");
     if((server_to_client = open(myfifo2, O_WRONLY,0777))==-1) perror("OPEN 3:");

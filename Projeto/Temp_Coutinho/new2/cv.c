@@ -20,7 +20,7 @@ int main(){
   printf("cv: %s\n", cv);
 
   int public;
-  char *publicfifo = "/tmp/publicfifo";
+  char *publicfifo = "./fifos/publicfifo";
   if((public = open(publicfifo, O_WRONLY, 0777)) == -1) perror("OPEN 1:");
   if((n = write(public, cv,strlen(cv)))==-1) perror("WRITE 1:");
 
@@ -33,10 +33,10 @@ int main(){
   char* buf = malloc(100*sizeof(char));
   char* buf1 = malloc(100*sizeof(char));
 
-  strcpy(myfifo1,"/tmp/W");
+  strcpy(myfifo1,"./fifos/W");
   strcat(myfifo1,pid);
   printf("myfifo1: %s\n", myfifo1);
-  strcpy(myfifo2,"/tmp/R");
+  strcpy(myfifo2,"./fifos/R");
   strcat(myfifo2,pid);
   printf("myfifo2: %s\n", myfifo2);
 
