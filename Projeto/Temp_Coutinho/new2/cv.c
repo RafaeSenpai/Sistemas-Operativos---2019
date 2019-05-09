@@ -3,13 +3,12 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <sys/wait.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
-int main(int argc, char const *argv[]){
+int main(){
 
   int n;
 
@@ -18,9 +17,12 @@ int main(int argc, char const *argv[]){
   strcpy(cv,"cliente ");
   sprintf(pid,"%d",getppid());
   strcat(cv,pid);
+  printf("cv: %s\n", cv);
 
   int public;
-  char *publicfifo = "/tmp/client_to_server_fifo";
+  char *publicfifo = "/tmp/publicfifo";
+  if((public = open(publicfifo, O_WRONLY, 0777)) == -1) perror("OPEN 1:");
+  if((n = write(public, cv,strlen(cv)))==-1) perror("WRITE 1:");
 
   int client_to_server;
   char *myfifo1 = malloc(50*sizeof(char));
@@ -33,40 +35,39 @@ int main(int argc, char const *argv[]){
 
   strcpy(myfifo1,"/tmp/W");
   strcat(myfifo1,pid);
+  printf("myfifo1: %s\n", myfifo1);
   strcpy(myfifo2,"/tmp/R");
   strcat(myfifo2,pid);
+  printf("myfifo2: %s\n", myfifo2);
 
   if((n=mkfifo(myfifo1, 0777))==-1) perror("myfifo1:");
   if((n=mkfifo(myfifo2, 0777))==-1) perror("myfifo2:");
 
-  if((public = open(publicfifo, O_WRONLY, 0777)) == -1) perror("OPEN 1:");
-  if((n = write(public, cv,strlen(cv)))==-1) perror("WRITE 1:");
-  printf("cv:%s\n", cv);
-  printf("here\n");
-  printf("%d------\n",client_to_server );
   if((client_to_server = open(myfifo1, O_WRONLY,0777))==-1) perror("OPEN 2:");
-  printf("client %d\n", client_to_server);
   if((server_to_client = open(myfifo2, O_RDONLY,0777))==-1) perror("OPEN 3:");
 
   while(1){
 
     while((n=read(0,buf,1024))>0){
 
-      printf("here\n");
+      strtok(buf, "\n");
+      printf("buf: %s\n",buf);
 
-      //if(strcmp(buf, " ") != 0 && strcmp(buf, "\n") == 0 ){
-        printf("buf: %s\n",buf);
-        if((n=write(client_to_server,buf, strlen(buf)))==-1) perror("WRITE 2:");
-        if((n=read(server_to_client,buf1,100))==-1) perror("READ 1:");
-        printf("resposta: %s\n",buf1);
+      //if(strcmp(buf, " ") != 0 && strcmp(buf, "\n") != 0 ){
+      if((n=write(client_to_server,buf, strlen(buf)))==-1) perror("WRITE 2:");
+      if((n=read(server_to_client,buf1,100))==-1) perror("READ 1:");
+      printf("resposta: %s\n",buf1);
 
-        buf1 = calloc(100, sizeof(char));
+      buf1 = calloc(100, sizeof(char));
       //}
       buf = calloc(100, sizeof(char));
     }
   }
+  close(client_to_server);
+  close(server_to_client);
   unlink(myfifo1);
   unlink(myfifo2);
+  unlink(publicfifo);
   return 0;
 }
 

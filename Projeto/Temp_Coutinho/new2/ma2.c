@@ -7,7 +7,7 @@ void main(){//-------------------------------------FUNCIONAL
 	char* filename = malloc(100*sizeof(char));
 	char* line = malloc(100*sizeof(char));
 
-	while(read(0,filename,1024)){
+	while(read(0,filename,100)){
 
 		if(strcmp(filename, "quit\n") == 0) break;
 
@@ -16,7 +16,12 @@ void main(){//-------------------------------------FUNCIONAL
 
 		printf("LOADING...\n");
 
-		while((n = readLine(fd, line, 1024)) > 0) menuComandosMA(line);
+		while((n = readLine(fd, line, 100)) > 0){
+			menuComandosMA(line);
+			line = calloc(100, sizeof(char));
+		}
+
+		filename = calloc(100, sizeof(char));
 
 		printf("LOADED\n");
 	}

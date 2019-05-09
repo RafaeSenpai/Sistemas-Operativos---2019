@@ -17,9 +17,9 @@ int main(int argc, char const *argv[]){
   int server_to_client;
   char *myfifo2 = "/tmp/server_to_client_fifo";
 
-  char* buf = NULL;
-  char* str = NULL;
-  char* buf1 = NULL;
+  char* buf = malloc(100*sizeof(char));
+  char* str = malloc(100*sizeof(char));
+  char* buf1 = malloc(100*sizeof(char));
 
   int status;
 
@@ -30,9 +30,6 @@ int main(int argc, char const *argv[]){
   write(1,"Server ON.\n",11);
 
   while (1){
-    buf = malloc(100*sizeof(char));
-    str = malloc(100*sizeof(char));
-    buf1 = malloc(100*sizeof(char));
 
     int n=read(client_to_server,buf,1024); // LER O QUE O CLIENTE ESCREVE
     strcpy(buf1,buf);
@@ -63,9 +60,9 @@ int main(int argc, char const *argv[]){
       close(server_to_client);
     }
 
-    free(buf);
-    free(str);
-    free(buf1);
+    buf = calloc(100,sizeof(char));
+    str = calloc(100,sizeof(char));
+    buf1 = calloc(100,sizeof(char));
   }
   close(client_to_server);
 

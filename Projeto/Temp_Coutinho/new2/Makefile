@@ -1,42 +1,26 @@
-#
-# Makefile  
-#
-# Sistemas Operativos - MIEI - 2018/2019
-#
-
 CC = gcc
-CFLAGS = -Wall
+CFlags = -o
 
-all: gestVendas   
+all: ma
 
-gestVendas: ma.o maAPI.o errors.o cv.o cvAPI.o
-	$(CC) $(CFLAGS) -o gestVendas  ma.o maAPI.o errors.o cv.o cvAPI.o
+teste: ma.o
+	$(CC) ma.o  $(CFlags)
 
+ma.o: ma.c
+	$(CC) -c ma.c 
 
-ma.o: ma.c  
-	$(CC) $(CFLAGS) -c ma.c
+sv: sv.c
+    $(CC) sv $(CFlags)
 
-maAPI.o: maAPI.c maAPI.h 
-	$(CC) $(CFLAGS) -c maAPI.c
+cv: cv.c
+    $(CC) $(CFlags) cv
 
-errors.o: errors.c errors.h 
-	$(CC) $(CFLAGS) -c errors.c
-
-cv.o: cv.c
-	$(CC) $(CFLAGS) -c cv.c
-
-cvAPI.o: cvAPI.c cvAPI.h 
-	$(CC) $(CFLAGS) -c cvAPI.c
+clean:
+	rm /tmp/client_to_server /tmp/W* /tmp/R* 
 
 
-cleanMa:
-	rm -rf ma.o maAPI.o errors.o
+txt:
+	rm -rf *.txt
 
-cleanCv:
-	rm -rf cv.o cvAPI.o errors.o
-
-cleanData:
-	rm -rf STRINGS.txt STOCKS.txt ARTIGOS.txt VENDAS.txt
-
-cleanAll:
-	rm -rf gestVendas ma cv ma.o maAPI.o cv.o cvAPI.o errors.o STRINGS.txt STOCKS.txt ARTIGOS.txt VENDAS.txt
+run:
+	./ma
