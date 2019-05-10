@@ -12,74 +12,79 @@
 
 int main(){
 
-  int i, n, status, fdPublic, fdVendas, param1, param2, op, pids[tam];
+  int i, n, status, fdPublic, fdVendas, param1, param2, op, pids[tam], client_to_server, server_to_client;
+
+  char *myfifo1 = malloc(50*sizeof(char));
+  char *myfifo2 = malloc(50*sizeof(char));
+  char *buf = malloc(100*sizeof(char));
+  char* tipo = malloc(100*sizeof(char));
+  char* pidFifo = malloc(100*sizeof(char));
+  char *fifoVendas = "./fifos/fifoVendas";
+  char *publicFifo = "./fifos/publicFifo";
+
   i = 0;
 
-  char *publicFifo = "./fifos/publicFifo";
   if((n=mkfifo(publicFifo,0777))==-1) perror("MKFIFO 1:");
   printf("here\n");
-  if((fdPublic = open(publicFifo, O_RDONLY,0777)) == -1) perror("OPEN 1:");
-  printf("here\n");
-  printf("fdPublic: %d\n", fdPublic);
-
-  char *fifoVendas = "./fifos/fifoVendas";
   if((n=mkfifo(fifoVendas,0777))==-1) perror("MKFIFO 2:");
+  printf("here\n");
+
+  if((fdPublic = open(publicFifo, O_RDONLY,0777)) == -1) perror("OPEN 1:");
+  printf("fdPublic: %d\n", fdPublic);
   if((fdVendas = open(fifoVendas, O_RDONLY,0777)) == -1) perror("OPEN 2:");
   printf("fdVendas: %d\n", fdVendas);
 
+  if((client_to_server = open(myfifo1, O_RDONLY,0777))==-1) perror("OPEN 3:");
+  if((server_to_client = open(myfifo2, O_WRONLY,0777))==-1) perror("OPEN 4:");
+
+  if((n = read(fdPublic, buf, 100))==-1) perror("READ 1:");
+
+  tipo  = strtok(buf," ");
+  pidFifo = strtok(NULL," ");
+  strcpy(myfifo1,"./fifos/W");
+  strcat(myfifo1,pidFifo);
+  printf("myfifo1: %s\n", myfifo1);
+  strcpy(myfifo2,"./fifos/R");
+  strcat(myfifo2,pidFifo);
+  printf("myfifo2: %s\n", myfifo2);
+
+  if(i<tam){
+    pids[i] = atoi(pidFifo); //guardar pids em array para concorrencia
+    i++;
+  }
+
   while(1){
 
-    int client_to_server;
-    char *myfifo1 = malloc(50*sizeof(char));
-
-    int server_to_client;
-    char *myfifo2 = malloc(50*sizeof(char));
-
-    char *buf = malloc(100*sizeof(char));
-
     write(1,"Server ON.\n",11);
-
-    if((n = read(fdPublic, buf, 100))==-1) perror("READ 1:");
-
-    char* cenas  = strtok(buf," ");
-    char* cenas2 = strtok(NULL," ");
-    strcpy(myfifo1,"./fifos/W");
-    strcat(myfifo1,cenas2);
-    printf("myfifo1: %s\n", myfifo1);
-    strcpy(myfifo2,"./fifos/R");
-    strcat(myfifo2,cenas2);
-    printf("myfifo2: %s\n", myfifo2);
-
-    if(i<tam){
-      pids[i] = atoi(cenas2); //guardar pids em array para concorrencia
-      i++;
-    }
-
-    sleep(1);
-
-    if((client_to_server = open(myfifo1, O_RDONLY,0777))==-1) perror("OPEN 2:");
-    if((server_to_client = open(myfifo2, O_WRONLY,0777))==-1) perror("OPEN 3:");
 
     buf = calloc(100, sizeof(char));
 
     while (1){
 
-
-
       if(fork()==0){
 
         while(n=read(client_to_server, buf, 100)>0){ if(n==-1) perror("READ 2:");
 
+          if(strcmp(buf, "exit\n") == 0) break;
+
           printf("buf: %s\n", buf);
 
-          menuComandosCV(buf); //usar DUP ou DUP2 para mandar para stdout do CV
+          //dup redirecionar terminal para server_to_client
+          menuComandosCV(buf);
+          //dup redirecionar server_to_client para terminal
 
-          if((n=write(server_to_client, "OK\n", 20))==-1) perror("WRITE 1:");
-          printf("OK\n");
+          if((n=write(server_to_client, "OK server\n", 20))==-1) perror("WRITE 1:");
+          if((n=read(client_to_server,buf,100))==-1) perror("READ 1:");
+          printf("resposta: %s\n",buf);
 
           buf = calloc(100, sizeof(char));
         }
 
+        free(buf);
+        close(client_to_server);
+        unlink(myfifo1);
+        close(server_to_client);
+        unlink(myfifo2);
         _exit(0);
       }
 
