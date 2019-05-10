@@ -40,10 +40,10 @@ char* fileReadLine(int fildes){
 }
 
 ssize_t readLine(int fildes, void *buf, size_t nbyte){
-int n;
-char c;
-char *buffer = (char *)buf;
-ssize_t nbytes = 0;
+  int n;
+  char c;
+  char *buffer = (char *)buf;
+  ssize_t nbytes = 0;
 
     while( nbytes < nbyte && (n = read(fildes,&c,1)) > 0 && c != '\n' ){
         buffer[nbytes++] = c;
@@ -59,7 +59,7 @@ ssize_t nbytes = 0;
 }
 
 ArtigoFile criaStructArtigo(int nbArt, int nbStr,char* price){//---------------FUNCIONAL
-ArtigoFile new = malloc(sizeof(struct ArtigoF));
+  ArtigoFile new = malloc(sizeof(struct ArtigoF));
 
 	if(new){
 		new->id = nbArt/sizeof(struct ArtigoF);
@@ -523,10 +523,10 @@ int currentID;
 }
 
 void geraAgregacao(){
-int aggregationFile = open(nameFileAgregation(),O_CREAT | O_RDWR | O_APPEND, 0777); //<<--- é criado o ficheiro de agregação com o nome igual á data do momento em que é gerada a agregação
-int fdVendas = open(SaleFile,O_RDONLY,0777);
-int nSales = getNumVendas(fdVendas);//<<---- numero de vendas existente no ficheiro VENDAS.txt
-int idArt;
+  int aggregationFile = open(nameFileAgregation(),O_CREAT | O_RDWR | O_APPEND, 0777); //<<--- é criado o ficheiro de agregação com o nome igual á data do momento em que é gerada a agregação
+  int fdVendas = open(SaleFile,O_RDONLY,0777);
+  int nSales = getNumVendas(fdVendas);//<<---- numero de vendas existente no ficheiro VENDAS.txt
+  int idArt;
 
 	if(aggregationFile){
 
@@ -591,10 +591,10 @@ Venda aux = malloc(sizeof(struct Vendas));
 }
 
 void menuComandosCV(char* buffer){//----------------------------------------------FUNCIONAL
-char* param1 = strtok(buffer," ");
-char* param2 = strtok(NULL," ");
-int countParams = 0;
-char* x = "gv";
+  char* param1 = strtok(buffer," ");
+  char* param2 = strtok(NULL," ");
+  int countParams = 0;
+  char* x = "gv";
 
 	while(countParams==0){
 		if(strcmp(param1,x)==0){
@@ -636,10 +636,32 @@ void menuComandosMA(char* buffer){//-------------------------------------FUNCION
   char* param3 = strtok(NULL," ");
   char* msg = malloc(50*sizeof(char));
   char* line = malloc(100*sizeof(char));
+  char* myfifo1 = malloc(50*sizeof(char));
+  char* myfifo2 = malloc(50*sizeof(char));
+  char* publicFifo = "./fifos/publicFifo";
+  char* pid;
+  int fdPublic, client_to_server, server_to_client;
 
   int fd, n;
 
 	switch(*param1){
+    case 'a':
+
+      strcpy(myfifo1,"./fifos/W");
+      strcat(myfifo1,pid);
+      printf("myfifo1: %s\n", myfifo1);
+      strcpy(myfifo2,"./fifos/R");
+      strcat(myfifo2,pid);
+      printf("myfifo2: %s\n", myfifo2);
+
+      if((n=mkfifo(myfifo1, 0777))==-1) perror("myfifo1:");
+      if((n=mkfifo(myfifo2, 0777))==-1) perror("myfifo2:");
+
+      if((fdPublic = open(publicFifo, O_WRONLY, 0777)) == -1) perror("OPEN 1:");
+
+      if((client_to_server = open(myfifo1, O_WRONLY,0777))==-1) perror("OPEN 1:");
+      if((server_to_client = open(myfifo2, O_RDONLY,0777))==-1) perror("OPEN 2:");
+
 		case 'i':
 			insereArtigo(param2,param3);
 			break;

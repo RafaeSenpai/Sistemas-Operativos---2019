@@ -1,3 +1,4 @@
+#include "API.h"
 #include <ctype.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -10,28 +11,32 @@
 
 int main(){
 
-  int n;
+  int n, fdPublic, fdVendas, client_to_server, server_to_client, x;
 
   char* pid = malloc(sizeof(char));
   char* cv = malloc(20*sizeof(char));
+  char* buf = malloc(100*sizeof(char));
+  char* buf2 = malloc(100*sizeof(char));
+  char* param1 = malloc(100*sizeof(char));
+  char* param2 = malloc(100*sizeof(char));
+  char* lixo = malloc(100*sizeof(char));
+  char* myfifo1 = malloc(50*sizeof(char));
+  char* myfifo2 = malloc(50*sizeof(char));
+  char* publicFifo = "./fifos/publicFifo";
+  char* fifoVendas = "./fifos/fifoVendas";
+
   strcpy(cv,"cliente ");
   sprintf(pid,"%d",getppid());
   strcat(cv,pid);
   printf("cv: %s\n", cv);
 
-  int public;
-  char *publicfifo = "./fifos/publicfifo";
-  if((public = open(publicfifo, O_WRONLY, 0777)) == -1) perror("OPEN 1:");
-  if((n = write(public, cv,strlen(cv)))==-1) perror("WRITE 1:");
+  if((fdPublic = open(publicFifo, O_WRONLY, 0777)) == -1) perror("OPEN 1:");
 
-  int client_to_server;
-  char *myfifo1 = malloc(50*sizeof(char));
+  sleep(1);
 
-  int server_to_client;
-  char *myfifo2 = malloc(50*sizeof(char));
+  if((n = write(fdPublic, cv,strlen(cv)))==-1) perror("WRITE 1:");
 
-  char* buf = malloc(100*sizeof(char));
-  char* buf1 = malloc(100*sizeof(char));
+  if((fdVendas = open(fifoVendas, O_WRONLY, 0777)) == -1) perror("OPEN 2:");
 
   strcpy(myfifo1,"./fifos/W");
   strcat(myfifo1,pid);
@@ -43,112 +48,82 @@ int main(){
   if((n=mkfifo(myfifo1, 0777))==-1) perror("myfifo1:");
   if((n=mkfifo(myfifo2, 0777))==-1) perror("myfifo2:");
 
-  if((client_to_server = open(myfifo1, O_WRONLY,0777))==-1) perror("OPEN 2:");
-  if((server_to_client = open(myfifo2, O_RDONLY,0777))==-1) perror("OPEN 3:");
+  if((client_to_server = open(myfifo1, O_WRONLY,0777))==-1) perror("OPEN 3:");
+  if((server_to_client = open(myfifo2, O_RDONLY,0777))==-1) perror("OPEN 4:");
 
   while(1){
 
     while((n=read(0,buf,1024))>0){
 
-      strtok(buf, "\n");
-      printf("buf: %s\n",buf);
+      printf("BEGIN\n");
 
-      //if(strcmp(buf, " ") != 0 && strcmp(buf, "\n") != 0 ){
-      if((n=write(client_to_server,buf, strlen(buf)))==-1) perror("WRITE 2:");
-      if((n=read(server_to_client,buf1,100))==-1) perror("READ 1:");
-      printf("resposta: %s\n",buf1);
+      if (n == -1) perror("READ 1:");
+      if((strcmp(buf, " ") != 0 && strcmp(buf, "\n") != 0)) {
 
-      buf1 = calloc(100, sizeof(char));
-      //}
+        strtok(buf, "\n");
+
+        param1 = strtok(buf, " ");
+        buf2 = strtok(NULL, "\n");
+        param2 = strtok(buf2, " ");
+        lixo = strtok(NULL, " ");
+
+        if(!buf2){
+          printf("caso 1\n");
+
+          sprintf(buf, "%s", param1);
+
+          if((n=write(client_to_server,buf, strlen(buf)))==-1) perror("WRITE 2:");
+          if((n=read(server_to_client,buf,100))==-1) perror("READ 1:");
+          printf("resposta: %s\n",buf);
+
+          param1 = calloc(100, sizeof(char));
+          param2 = calloc(100, sizeof(char));
+          lixo = calloc(100, sizeof(char));
+        }
+
+        else if(!lixo){
+          printf("caso 2\n");
+
+          printf("param1: %s\n",param1);
+          printf("param2: %s\n",param2);
+
+          printf("buf: %s\n",param2);
+          buf = calloc(100, sizeof(char));
+
+          sprintf(buf, "%s %s", param1, param2);
+          printf("buf: %s\n", buf);
+
+          if((n=write(fdVendas,buf, strlen(buf)))==-1) perror("WRITE 2:");
+          if((n=read(server_to_client,buf,100))==-1) perror("READ 1:");
+        }
+
+        else{
+      			system("clear"); //perguntar ao rafa
+      			write(1,"Comando inválido!\nInsira novo comando:\n",41);
+        }
+
+        buf = calloc(100, sizeof(char));
+        buf2 = calloc(100, sizeof(char));
+        param1 = calloc(100, sizeof(char));
+        param2 = calloc(100, sizeof(char));
+        lixo = calloc(100, sizeof(char));
+      }
+
+      if(strcmp(buf, "exit\n") == 0){
+        buf = calloc(100, sizeof(char));
+        break;
+      }
+
       buf = calloc(100, sizeof(char));
+      buf2 = calloc(100, sizeof(char));
+
+      printf("END\n");
     }
   }
   close(client_to_server);
   close(server_to_client);
   unlink(myfifo1);
   unlink(myfifo2);
-  unlink(publicfifo);
+  unlink(publicFifo);
   return 0;
 }
-
-/*
-int main(int argc, char const *argv[])
-{
-   int client_to_server;
-   char *myfifo = "/tmp/client_to_server_fifo";
-
-   int server_to_client;
-   char *myfifo2= "/tmp/server_to_client_fifo";
-
-   //pid_t pid=getpid();// saber o pid para saber que sao clientes diferente
-
-
-   client_to_server = open(myfifo, O_WRONLY);// ESCREVER O CLIENTE
-   server_to_client = open(myfifo2, O_RDONLY); // LER O QUE O SERVER MANDA.REPARA QUE UM LÊ E OUTRO ESCREVE(NOS 2 FICHEIROS E SÃO ALTERNADOS)
-   // meter os nomes iguais logo metes myfifo+ pid para ser igual ao server
-    write str to the FIFO
-   while(1){
-
-
-
-            int n;
-            pid_t pid;// saber o pid para saber que sao clientes diferente
-
-            char* str = malloc(100*sizeof(char));
-            char* str1 = malloc(100*sizeof(char));
-            char* strfinal = malloc(200*sizeof(char));
-            strcat(strfinal,myfifo2);
-            strcat(strfinal,str1);
-            //server_to_client = open(myfifo, O_RDONLY);
-
-
-            // str=malloc(sizeof(BUFSIZ));
-            while((n=read(0,str,sizeof(str)))>0){
-               				//printf("....................\n");
-            			  sprintf(str1,"%d",getppid());
-            			  //printf("....................\n");
-            			  printf("%s\n", str1);
-            			  //printf("....................\n");
-
-            			  //sprintf(myfifo2,"/%s",str1);
-
-
-            			  //printf("....................\n");
-
-            			  printf("%s\n",strfinal);
-
-            			  //server_to_client = open(myfifo2, O_RDONLY);
-                          write(1,"----------\n",11);
-                          strcat(str1," ");
-                          strcat(str1,str);
-                          strcpy(str,str1);
-                          write(1,"cmd message to serwer: \n",25);
-		                  //strcat(str," ");// a tasqueiro mas é para adiconar um espaço
-		                  //strcat(str,str1);
-		                  printf("%s",str);
-		                  printf("%s\n",myfifo);
-		                  write(client_to_server, str, strlen(str)); // por causa do espaço adicionamos mais 1
-		          		    perror("Write:"); //Very crude error check
-		          		    read(server_to_client,str,strlen(str));
-		          		    perror("Read:"); // Very crude error check
-		                  write(1,"----------\n",11);
-		                  write(1,str,strlen(str));
-
-            	}
-                //write(client_to_server,&pid,sizeof(pid_t));
-
-
-
-               // memset(str, 0, sizeof(str-1));
-
-
-
-		   /* remove the FIFO
-
-
-	}
-      close(client_to_server);
-      close(server_to_client);
- 	  return 0;
-}
-*/

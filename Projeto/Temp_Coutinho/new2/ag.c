@@ -4,7 +4,7 @@
 #include "notifications.h"
 
 int main(){
-int fdVendas = open("VENDAS.txt",O_RDONLY,0777);
+	int fdVendas = open("VENDAS.txt",O_RDONLY,0777);
 
 	if(fdVendas){
 		geraAgregacao();
