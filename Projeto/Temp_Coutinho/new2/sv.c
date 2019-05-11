@@ -1,4 +1,4 @@
-#include "API.h"
+#include "api.h"
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
@@ -34,19 +34,6 @@ int main(){
   if((fdVendas = open(fifoVendas, O_RDONLY,0777)) == -1) perror("OPEN 2:");
   printf("fdVendas: %d\n", fdVendas);
 
-  if((client_to_server = open(myfifo1, O_RDONLY,0777))==-1) perror("OPEN 3:");
-  if((server_to_client = open(myfifo2, O_WRONLY,0777))==-1) perror("OPEN 4:");
-
-  if((n = read(fdPublic, buf, 100))==-1) perror("READ 1:");
-
-  tipo  = strtok(buf," ");
-  pidFifo = strtok(NULL," ");
-  strcpy(myfifo1,"./fifos/W");
-  strcat(myfifo1,pidFifo);
-  printf("myfifo1: %s\n", myfifo1);
-  strcpy(myfifo2,"./fifos/R");
-  strcat(myfifo2,pidFifo);
-  printf("myfifo2: %s\n", myfifo2);
 
   if(i<tam){
     pids[i] = atoi(pidFifo); //guardar pids em array para concorrencia
@@ -55,47 +42,66 @@ int main(){
 
   while(1){
 
-    write(1,"Server ON.\n",11);
+    write(1,"SERVER ON.\n",11);
 
     buf = calloc(100, sizeof(char));
 
     while (1){
 
+      if((n = read(fdPublic, buf, 100))==-1) perror("READ 1:");
+
+      tipo  = strtok(buf," ");
+      pidFifo = strtok(NULL," ");
+      strcpy(myfifo1,"./fifos/W");
+      strcat(myfifo1,pidFifo);
+      printf("myfifo1: %s\n", myfifo1);
+      strcpy(myfifo2,"./fifos/R");
+      strcat(myfifo2,pidFifo);
+      printf("myfifo2: %s\n", myfifo2);
+
+      if((client_to_server = open(myfifo1, O_RDONLY,0777))==-1) perror("OPEN 3:");
+      if((server_to_client = open(myfifo2, O_WRONLY,0777))==-1) perror("OPEN 4:");
+
       if(fork()==0){
 
-        while(n=read(client_to_server, buf, 100)>0){ if(n==-1) perror("READ 2:");
+        buf = calloc(100, sizeof(char));
 
-          if(strcmp(buf, "exit\n") == 0) break;
+        while(n=read(client_to_server, buf, 100)>0){
+          if(n==-1) perror("READ 2:");
 
           printf("buf: %s\n", buf);
 
           //dup redirecionar terminal para server_to_client
-          menuComandosCV(buf);
+          menuComandos(buf);
           //dup redirecionar server_to_client para terminal
 
-          if((n=write(server_to_client, "OK server\n", 20))==-1) perror("WRITE 1:");
-          if((n=read(client_to_server,buf,100))==-1) perror("READ 1:");
-          printf("resposta: %s\n",buf);
-
           buf = calloc(100, sizeof(char));
-        }
-
+        }/*
         free(buf);
+        free(tipo);
+        free(pidFifo);
         close(client_to_server);
-        unlink(myfifo1);
         close(server_to_client);
+        close(fdPublic);
+        close(fdVendas);
+        unlink(myfifo1);
         unlink(myfifo2);
+        unlink(publicFifo);
+        unlink(fifoVendas);*/
         _exit(0);
       }
-
-      else break;
     }
-    // close(client_to_server);
-    // close(server_to_client);
-    // unlink(myfifo1);
-    // unlink(myfifo2);
   }
+  free(buf);
+  free(tipo);
+  free(pidFifo);
+  close(client_to_server);
+  close(server_to_client);
   close(fdPublic);
+  close(fdVendas);
+  unlink(myfifo1);
+  unlink(myfifo2);
   unlink(publicFifo);
+  unlink(fifoVendas);
   return 0;
 }

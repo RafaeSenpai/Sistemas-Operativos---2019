@@ -52,6 +52,6 @@
 #include <string.h> //strlen - strcpy - strtok
 #include <stdlib.h> //exit()
 
-void catchError(char *msg);
+void catchMessage(char *msg);
 
 #endif

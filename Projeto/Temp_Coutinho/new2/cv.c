@@ -1,4 +1,4 @@
-#include "API.h"
+#include "api.h"
 #include <ctype.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -46,10 +46,10 @@ int main(){
   if((fdVendas = open(fifoVendas, O_WRONLY, 0777)) == -1) perror("OPEN 2:");
   printf("fdVendas: %d\n", fdVendas);
 
+  if((n = write(fdPublic, cv,strlen(cv)))==-1) perror("WRITE 1:");
+
   if((client_to_server = open(myfifo1, O_WRONLY,0777))==-1) perror("OPEN 3:");
   if((server_to_client = open(myfifo2, O_RDONLY,0777))==-1) perror("OPEN 4:");
-
-  if((n = write(fdPublic, cv,strlen(cv)))==-1) perror("WRITE 1:");
 
   while(1){
 
@@ -66,21 +66,22 @@ int main(){
         param2 = strtok(buf2, " ");
         lixo = strtok(NULL, " ");
 
-        if(strcmp(param1, "exit\n") == 0){
+        /*if(strcmp(param1, "exit\n") == 0){
           if((n=write(client_to_server,param1, strlen(param1)))==-1) perror("WRITE 2:");
           param1 = calloc(100, sizeof(char));
           break;
-        }
+        }*/
+
+        buf = calloc(100, sizeof(char));
 
         if(!buf2){
           printf("caso 1\n");
 
+          printf("param1: %s\n", param1);
           sprintf(buf, "%s", param1);
+          printf("buf: %s\n", buf);
 
           if((n=write(client_to_server,buf, strlen(buf)))==-1) perror("WRITE 2:");
-          if((n=read(server_to_client,buf,100))==-1) perror("READ 1:");
-          printf("resposta: %s\n",buf);
-          if((n=write(server_to_client, "OK cliente\n", 20))==-1) perror("WRITE 1:");
 
           // param1 = calloc(100, sizeof(char));
           // param2 = calloc(100, sizeof(char));
