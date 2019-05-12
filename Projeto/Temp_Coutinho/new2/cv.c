@@ -82,7 +82,7 @@ int main(){
 
           buf = calloc(100, sizeof(char));
 
-          if((n=read(server_to_client, buf, 100)) == -1) perror("READ: 3");
+          if((n=read(server_to_client, buf, 1000000)) == -1) perror("READ: 3");
 
           write(1, buf, strlen(buf));
 

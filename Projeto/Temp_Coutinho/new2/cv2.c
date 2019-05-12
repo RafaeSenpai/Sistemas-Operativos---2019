@@ -1,4 +1,4 @@
-#include "API.h"
+#include "api.h"
 
 int main(int argc, char const *argv[]){
 
@@ -16,7 +16,7 @@ int main(int argc, char const *argv[]){
 
 		printf("LOADING...\n");
 
-		while((n = readLine(fd, line, 1024)) > 0) menuComandosCV(line);
+		while((n = readln(fd, line, 1024)) > 0) menuComandos(line);
 
 		printf("LOADED\n");
 	}
