@@ -1,4 +1,4 @@
-#include "API.h"
+#include "api.h"
 
 void main(){//-------------------------------------FUNCIONAL
 
@@ -16,8 +16,8 @@ void main(){//-------------------------------------FUNCIONAL
 
 		printf("LOADING...\n");
 
-		while((n = readLine(fd, line, 100)) > 0){
-			menuComandosMA(line);
+		while((n = readln(fd, line, 100)) > 0){
+			maMenuComandos(line);
 			line = calloc(100, sizeof(char));
 		}
 

@@ -1,10 +1,4 @@
 #include "api.h"
-#include <fcntl.h> //file descriptor
-#include <unistd.h> //system calls
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <sys/stat.h>
 
 int main(){
 

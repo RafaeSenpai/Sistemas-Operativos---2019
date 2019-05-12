@@ -1,6 +1,15 @@
 #ifndef api_h
 #define api_h
 #include <sys/types.h>
+#include <fcntl.h> //file descriptor
+#include <stdlib.h> //atof
+#include <stdio.h>	//sprintf
+#include <string.h> //strlen - strcpy - strtok - strcmp
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <unistd.h> //system calls
+#include "notifications.h"
 
 
 /*
