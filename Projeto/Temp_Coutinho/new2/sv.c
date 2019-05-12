@@ -49,7 +49,6 @@ int main(){
   if((n=mkfifo(fifoVendas,0777))==-1) perror("MKFIFO 2:");
 
   if((fdPublic = open(publicFifo, O_RDONLY,0777)) == -1) perror("OPEN 1:");
-  if((fdVendas = open(fifoVendas, O_RDONLY,0777)) == -1) perror("OPEN 2:");
 
   while(1){
 
@@ -75,8 +74,8 @@ int main(){
           i++;
         }
 
-        if((client_to_server = open(myfifo1, O_RDONLY,0777))==-1) perror("OPEN 3:");
-        if((server_to_client = open(myfifo2, O_WRONLY,0777))==-1) perror("OPEN 4:");
+        if((client_to_server = open(myfifo1, O_RDONLY,0777))==-1) perror("OPEN 2:");
+        if((server_to_client = open(myfifo2, O_WRONLY,0777))==-1) perror("OPEN 3:");
 
         buf = calloc(100, sizeof(char));
         sprintf(buf, "%d", pidServer);
@@ -108,32 +107,11 @@ int main(){
             }
           }
           else{
-            // agregador
-          }/*
-          free(buf);
-          free(tipo);
-          free(pidFifo);
-          close(client_to_server);
-          close(server_to_client);
-          close(fdVendas);
-          unlink(myfifo1);
-          unlink(myfifo2);
-          unlink(fifoVendas);*/
+            execlp("./ag", "./ag", NULL);
+          }
           _exit(0);
         }
-    //}
     }
   }
-  free(buf);
-  free(tipo);
-  free(pidFifo);
-  close(client_to_server);
-  close(server_to_client);
-  close(fdPublic);
-  close(fdVendas);
-  unlink(myfifo1);
-  unlink(myfifo2);
-  unlink(publicFifo);
-  unlink(fifoVendas);
   return 0;
 }

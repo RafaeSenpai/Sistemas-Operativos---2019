@@ -1,4 +1,7 @@
 #include "notifications.h"
+#include <string.h> //strlen - strcpy - strtok - strcmp
+#include <unistd.h> //system calls
+//-----------------------------API Notifications----------------------------------
 
 
 /*
@@ -18,3 +21,6 @@ void catchMessage(char *msg){
 	write(1, msg,strlen(msg));
 	//exit(1); //<----------------------pode vir ater implicações quando usar concorrencia, talvez!
 }
+
+
+//------------------------------FIM API Notifications-----------------------------------------------

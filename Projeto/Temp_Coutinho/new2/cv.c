@@ -11,7 +11,7 @@
 
 int main(){
 
-  int n, fdPublic, fdVendas, client_to_server, server_to_client, serverPID;
+  int n, fdPublic, client_to_server, server_to_client, serverPID;
 
   char* pid = malloc(sizeof(char));
   char* cv = malloc(20*sizeof(char));
@@ -23,10 +23,9 @@ int main(){
   char* myfifo1 = malloc(50*sizeof(char));
   char* myfifo2 = malloc(50*sizeof(char));
   char* publicFifo = "./fifos/publicFifo";
-  char* fifoVendas = "./fifos/fifoVendas";
 
   strcpy(cv,"cliente ");
-  sprintf(pid,"%d",getppid());
+  sprintf(pid,"%d", getppid());
   strcat(cv,pid);
   strcpy(myfifo1,"./fifos/W");
   strcat(myfifo1,pid);
@@ -37,7 +36,6 @@ int main(){
   if((n=mkfifo(myfifo2, 0777))==-1) perror("MKFIFO 2:");
 
   if((fdPublic = open(publicFifo, O_WRONLY, 0777)) == -1) perror("OPEN 1:");
-  if((fdVendas = open(fifoVendas, O_WRONLY, 0777)) == -1) perror("OPEN 2:");
 
   if((n = write(fdPublic, cv,strlen(cv)))==-1) perror("WRITE 1:");
 
@@ -108,7 +106,8 @@ int main(){
           kill(serverPID, SIGUSR1);
 
           // provavelmente vai ser removido -> if((n=write(fdVendas,buf, strlen(buf)))==-1) perror("WRITE 2:");
-          // "" if((n=read(server_to_client,buf,100))==-1) perror("READ 3:");
+          if((n=read(server_to_client,buf,100))==-1) perror("READ 3:");
+          write(1, buf, strlen(buf));
         }
 
         else{

@@ -1,5 +1,7 @@
 #ifndef notifications_h
 #define notifications_h
+#include "api.h"
+
 
 #define ERROR_1 "Erro de descritor de ficheiro na função ma -> inserArtigo(...)!\nAo abrir o ficheiro STRINGS.txt\n\n"
 #define ERROR_2 "Erro de descritor de ficheiro na função ma -> inserArtigo(...)!\nAo abrir o ficheiro ARTIGOS.txt\n\n"
@@ -36,22 +38,36 @@
 #define ERROR_33 "Erro de descritor de ficheiro na função ag -> geraAgregacao(...)!\nAo abrir o ficheiro de agregação, ''aggregationFile''.txt\n\n"
 #define ERROR_34 "Erro de alocação de memória!\nNa função ag -> seeAllAggregation(...)\nVenda aux\n\n"
 #define ERROR_35 "Erro de descritor de ficheiro na função ag -> main()!\nNão pode ser feita a agregação porque o ficheiro VENDAS.txt ainda nao se encontra criado!\n\n"
+#define ERROR_36 "Erro de alocação de memória!\nNa função ag -> gerarLogFile()\nErro ao gerar a estrutura de log.\nnewLog\n\n"
+#define ERROR_37 "Erro de descritor de ficheiro na função ag -> gerarLogFile()!\nAo abrir o ficheiro log\n\n"
+#define ERROR_38 "Erro de descritor de ficheiro na função ag -> getAggregationFileName()!\nAo abrir o ficheiro log\n\n"
+#define ERROR_39 "Erro de alocação de memória!\nNa função ag -> getAggregationFileName()\nnomeFicheiro\n\n"
+#define ERROR_40 "Erro de descritor de ficheiro na função ag -> getLogStatus()!\nAo abrir o ficheiro log\n\n"
+#define ERROR_41 "Erro de descritor de ficheiro na função ag -> getLogLastAggregateSale()!\nAo abrir o ficheiro log\n\n"
+#define ERROR_42 "Erro de descritor de ficheiro na função ag -> setLogNewAggregationFileName()!\nAo abrir o ficheiro log\n\n"
+#define ERROR_43 "Erro de alocação de memória!\nNa função ag -> setLogNewAggregationFileName()\n LogFile new\n\n"
+#define ERROR_44 "Erro de descritor de ficheiro na função ag -> setNewStatus()!\nAo abrir o ficheiro log\n\n"
+#define ERROR_45 "Erro de descritor de ficheiro na função ag -> setLastAggregateSale()!\nAo abrir o ficheiro log\n\n"
+#define ERROR_46 "Erro de descritor de ficheiro recebido na função ag -> getNumVendas()!\nAo aceder ao conteudo do ficheiro fdVendas\n\n"
+#define ERROR_47 "Erro de descritor de ficheiro na função ag -> runAggregation()!\nAo abrir o ficheiro de agregação recebido como parametro\naggFileName\n\n"
+#define ERROR_48 "Erro de descritor de ficheiro na função ag -> runAggregation()!\nAo abrir o ficheiro vendas\n\n"
+#define ERROR_49 "Erro de alocação de memória!\nNa função ag -> runAggregation()\nVenda sale\n\n"
+#define ERROR_50 "Erro de descritor de ficheiro na função ag -> seeContentLog()\nAo abrir o ficheiro log\nNão existe ficheiro log\n\n"
+#define ERROR_51 "Erro de alocação de memória!\nNa função ag -> seeContentLog()\nLogFile log\n\n"
+#define ERROR_52 "Erro de alocação de memória!\nNa função ag -> seeContentLog()\nChar* msg\n\n"
 
 
-#define MSG_1 "O ID do artigo inserido não existe!\n"
-#define MSG_2 "O ID do artigo do qual quer fazer alteração do stock não existe!\n"
-#define MSG_3 "Não existe a venda pedida!\n"
-#define MSG_4 "Opção inválida!\nInsira novo comando:\n"
-#define MSG_5 "STOCK: O ID do artigo inserido não existe!\n"
-#define MSG_6 "PRECO: O ID do artigo inserido não existe!\n"
-#define MSG_7 "Artigo alterado com sucesso!\n"
-#define MSG_8 "NOME: O ID do artigo inserido não existe!\n"
-#define MSG_9 "Deixou de ter stock deste artigo!\n"
+#define MSG_1 "O ID do artigo inserido não existe!\n\n"
+#define MSG_2 "O ID do artigo do qual quer fazer alteração do stock não existe!\n\n"
+#define MSG_3 "Não existe a venda pedida!\n\n"
+#define MSG_4 "Opção inválida!\nInsira novo comando:\n\n"
+#define MSG_5 "STOCK: O ID do artigo inserido não existe!\n\n"
+#define MSG_6 "PRECO: O ID do artigo inserido não existe!\n\n"
+#define MSG_7 "Artigo alterado com sucesso!\n\n"
+#define MSG_8 "NOME: O ID do artigo inserido não existe!\n\n"
+#define MSG_9 "Deixou de ter stock deste artigo!\n\n"
+#define MSG_10 "Não existe nenhum ficheiro de vendas para agregar!\n\n"
 
-#include <unistd.h> //system calls
-#include <string.h> //strlen - strcpy - strtok
-#include <stdlib.h> //exit()
 
 void catchMessage(char *msg);
-
 #endif
