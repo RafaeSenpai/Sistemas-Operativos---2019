@@ -11,7 +11,7 @@
 
 int main(){
 
-  int n, fdPublic, fdVendas, client_to_server, server_to_client;
+  int n, fdPublic, fdVendas, client_to_server, server_to_client, serverPID;
 
   char* pid = malloc(sizeof(char));
   char* cv = malloc(20*sizeof(char));
@@ -28,34 +28,33 @@ int main(){
   strcpy(cv,"cliente ");
   sprintf(pid,"%d",getppid());
   strcat(cv,pid);
-  printf("cv: %s\n", cv);
   strcpy(myfifo1,"./fifos/W");
   strcat(myfifo1,pid);
-  printf("myfifo1: %s\n", myfifo1);
   strcpy(myfifo2,"./fifos/R");
   strcat(myfifo2,pid);
-  printf("myfifo2: %s\n", myfifo2);
 
   if((n=mkfifo(myfifo1, 0777))==-1) perror("MKFIFO 1:");
-  printf("here\n");
   if((n=mkfifo(myfifo2, 0777))==-1) perror("MKFIFO 2:");
-  printf("here\n");
 
   if((fdPublic = open(publicFifo, O_WRONLY, 0777)) == -1) perror("OPEN 1:");
-  printf("fdPublic: %d\n", fdPublic);
   if((fdVendas = open(fifoVendas, O_WRONLY, 0777)) == -1) perror("OPEN 2:");
-  printf("fdVendas: %d\n", fdVendas);
 
   if((n = write(fdPublic, cv,strlen(cv)))==-1) perror("WRITE 1:");
 
   if((client_to_server = open(myfifo1, O_WRONLY,0777))==-1) perror("OPEN 3:");
   if((server_to_client = open(myfifo2, O_RDONLY,0777))==-1) perror("OPEN 4:");
 
+  if((n = read(server_to_client, buf, 100))==-1) perror("READ 1:");
+
+  serverPID = atoi(buf);
+
+  buf = calloc(100, sizeof(char));
+
   while(1){
 
     printf("CLIENT ON\n");
 
-    while((n=read(0,buf,1024))>0){ if (n == -1) perror("READ 1:");
+    while((n=read(0,buf,1024))>0){ if (n == -1) perror("READ 2:");
 
       if((strcmp(buf, " ") != 0 && strcmp(buf, "\n") != 0)) {
 
@@ -83,9 +82,12 @@ int main(){
 
           if((n=write(client_to_server,buf, strlen(buf)))==-1) perror("WRITE 2:");
 
-          // param1 = calloc(100, sizeof(char));
-          // param2 = calloc(100, sizeof(char));
-          // lixo = calloc(100, sizeof(char));
+          buf = calloc(100, sizeof(char));
+
+          if((n=read(server_to_client, buf, 100)) == -1) perror("READ: 3");
+
+          write(1, buf, strlen(buf));
+
         }
 
         else if(!lixo){
@@ -100,8 +102,13 @@ int main(){
           sprintf(buf, "%s %s", param1, param2);
           printf("buf: %s\n", buf);
 
-          if((n=write(fdVendas,buf, strlen(buf)))==-1) perror("WRITE 2:");
-          if((n=read(server_to_client,buf,100))==-1) perror("READ 1:");
+          // manda informação de processamento de venda ao servidor
+          if((n=write(client_to_server, buf, strlen(buf)))==-1) perror("WRITE 3:");
+          // manda sinal para parar processos até acabar venda
+          kill(serverPID, SIGUSR1);
+
+          // provavelmente vai ser removido -> if((n=write(fdVendas,buf, strlen(buf)))==-1) perror("WRITE 2:");
+          // "" if((n=read(server_to_client,buf,100))==-1) perror("READ 3:");
         }
 
         else{
@@ -115,8 +122,6 @@ int main(){
         param2 = calloc(100, sizeof(char));
         lixo = calloc(100, sizeof(char));
       }
-
-
       printf("END\n");
     }
   }
