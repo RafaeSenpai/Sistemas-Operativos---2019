@@ -1,2 +1,0 @@
-Esta pasta foi criada para colocar ficheiros de codigo, anotações de cenas pendentes ou ideias, o que quiseres, testes de codigo, etc. 
-Tudo para que na pasta onde irá sendo colocado os ficheiros de codigo do projeto (SourceFilesProject) apenas contenha esses ficheiros e nada mais.

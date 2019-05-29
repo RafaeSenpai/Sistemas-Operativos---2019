@@ -1,1 +1,0 @@
-gcc maPARSERS.c maAPI.c ma.c -o ma
