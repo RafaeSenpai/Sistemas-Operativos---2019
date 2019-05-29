@@ -1,7 +1,7 @@
 ## Sistemas Operativos
 
 
- ### Guião 1 - Gestão de Processos
+ ### Guião 2 - Gestão de Processos
  
  #### Problemas propostos:       
  - [x] Problema 1              
