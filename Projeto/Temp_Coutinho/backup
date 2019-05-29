@@ -1,0 +1,100 @@
+#include <unistd.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+#include <string.h>
+#include <signal.h>
+#include <sys/types.h>
+
+void insere(char* nome, float preco);
+
+void altera_nome(int codigo, char* nome);
+
+void altera_preco(int codigo, float preco);
+
+int main(int argc, char* argv[]){
+
+  char buf[128], buf2[128], *nome, *acao, *codigo_string, *preco, *token;
+  int codigo_int, len1, len2;
+  double preco_f;
+
+  while(1){
+
+    scanf ("%[^\n]%*c", buf);
+    strcpy(buf2, buf);
+    acao = strtok(buf, " ");
+
+    if(strcmp(acao, "i") == 0){
+
+      preco = strrchr(buf2, ' ');
+      preco_f = atof(preco);
+      //printf("preco = %f\n", preco_f);
+
+      nome = strchr(buf2, ' ');
+      strtok(nome, " ");
+      //printf("nome = %s\n", nome);
+
+      printf("Comando: i, %s, %f\n", nome, preco_f);
+
+      //insere(nome, preco_val);
+    }
+
+    else if(strcmp(acao, "n") == 0){
+
+      nome = strrchr(buf2, ' ');
+      //printf("nome = %s\n", nome);
+
+      codigo_string = strchr(buf2, ' ');
+      strtok(codigo_string, " ");
+      codigo_int = atoi(codigo_string);
+      //printf("codigo = %d\n", codigo_int);
+
+      printf("Comando: n, %d, %s\n", codigo_int, nome);
+
+      //altera_nome(codigo_int, nome);
+    }
+
+    else if(strcmp(acao, "p") == 0){
+
+      preco = strrchr(buf2, ' ');
+      preco_f = atof(preco);
+      //printf("preco = %f\n", preco_f);
+
+      codigo_string = strchr(buf2, ' ');
+      strtok(codigo_string, " ");
+      codigo_int = atoi(codigo_string);
+      //printf("codigo = %d\n", codigo_int);
+
+      printf("Comando: i, %d, %f\n", codigo_int, preco_f);
+
+      //altera_preco(codigo_int, preco_f)
+    }
+
+    else if(strcmp(acao, "q") == 0) break;
+
+    else{
+
+      printf("Input inválido, insira novo input\n");
+
+    }
+
+  }
+
+  return 0;
+
+}
+
+void insere(char* nome, float preco){
+
+  int fd, i;
+
+  fd = open("ARTIGOS", O_CREAT | O_TRUNC | O_WRONLY, 0777);
+  write(fd, "HELLO HELLO HELLO", 18);
+  close(fd);
+
+}
+
+void altera_nome(int codigo, char* nome);
+
+void altera_preco(int codigo, float preco);
