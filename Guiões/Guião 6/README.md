@@ -1,7 +1,7 @@
 ## Sistemas Operativos
 
 
- ### Guião 1 - Acesso a ficheiros
+ ### Guião 6 - Pipes com nome
  
  #### Problemas propostos:       
  - [x] Problema 1              
