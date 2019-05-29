@@ -1,7 +1,7 @@
 ## Sistemas Operativos
 
 
- ### Guião 1 - Execução de Programas
+ ### Guião 3 - Execução de Programas
  
  #### Problemas propostos:       
  - [x] Problema 1              
