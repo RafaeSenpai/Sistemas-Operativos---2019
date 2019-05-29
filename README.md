@@ -1,5 +1,4 @@
 ## Sistemas Operativos
-<center> sdsf </center>
 
 
  ### Guião 1 - Acesso a ficheiros
