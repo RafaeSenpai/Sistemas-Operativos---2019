@@ -56,9 +56,6 @@ int main(){
 			O descritor a ser copiado deve ser fechado (função close()) depois de ser 
 			realizado o comando dup() caso já não seja necessário.
 		*/
-		close(fdInput);
-		close(fdOutput);
-		close(fdErrors);
 	}
 
 	return 0;
